@@ -9,9 +9,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Upload to S3 as artifact
         uses: ./
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-          DIST_FILE_PATH: './dummy91.zip'
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-east-1
+          dist_file_path: './dummy91.zip'
+          aws_s3_bucket_name: ${{ secrets.AWS_S3_BUCKET_NAME }}
