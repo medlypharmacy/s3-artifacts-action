@@ -2,14 +2,14 @@
 
 set -e
 
-if [[ -z "$INPUT_AWS_ACCESS_KEY_ID" || 
-      -z "$INPUT_SECRET_ACCESS_KEY" ||
+if [[ -z "$INPUT_AWS_ACCESS_KEY_ID" || \
+      -z "$INPUT_SECRET_ACCESS_KEY" || \
       -z "$INPUT_AWS_REGION" ]]; then
   echo "Please provide AWS credentials and region."
   exit 1
 fi
 
-if [[ -z "$INPUT_AWS_S3_BUCKET_NAME" ||
+if [[ -z "$INPUT_AWS_S3_BUCKET_NAME" || \
       -z "$INPUT_DIST_FILE_PATH" ]]; then
   echo "Please provide S3 bucket and local dist file."
   exit 1
