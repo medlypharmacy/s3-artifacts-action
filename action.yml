@@ -4,19 +4,19 @@ runs:
   using: docker
   image: Dockerfile
 inputs:
-  aws-access-key-id:  
+  aws_access_key_id:  
     description: 'AWS Access Key Id'
     required: true
-  aws-secret-access-key:  
+  aws_secret_access_key:  
     description: 'AWS Access Key Secret'
     required: true
-  aws-region:  
+  aws_region:  
     description: 'AWS Region'
     required: true
-  aws-s3-bucket-name:  
+  aws_s3_bucket_name:  
     description: 'AWS S3 Bucket Name where the dist file is uploaded'
     required: true
-  dist-file-path:  
+  dist_file_path:  
     description: 'Path of the zipped distribution file'
     required: true
 
