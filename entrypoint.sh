@@ -26,7 +26,7 @@ BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
 REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
 
 sh -c "aws s3 cp ${INPUT_DIST-FILE-PATH} s3://${INPUT_AWS-S3-BUCKET-NAME}/${REPO_NAME}/${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip \
-              --profile s3-sync-action \
+              --profile upload-artifacts-profile \
               --no-progress" 
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
