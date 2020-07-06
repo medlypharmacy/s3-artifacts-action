@@ -2,9 +2,7 @@
 
 set -e
 
-if [[ -z "$AWS_ACCESS_KEY_ID" || \
-      -z "$SECRET_ACCESS_KEY" || \
-      -z "$AWS_REGION" ]]; then
+if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "Please provide AWS credentials and region."
   exit 1
 fi
