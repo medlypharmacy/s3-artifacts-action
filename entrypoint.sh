@@ -25,7 +25,7 @@ EOF
 BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
 REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
 
-sh -c "aws s3 cp ${INPUT_DIST-FILE-PATH} s3://${INPUT_AWS-S3-BUCKET-NAME}/${REPO_NAME}/${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip \
+sh -c "aws s3 cp ./dummy91.zip s3://${INPUT_AWS-S3-BUCKET-NAME}/${REPO_NAME}/${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip \
               --profile upload-artifacts-profile \
               --no-progress" 
 
