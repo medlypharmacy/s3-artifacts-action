@@ -1,0 +1,22 @@
+name: "Artifacts"
+description: "Uploads artifacts segregated by app and branch"
+runs:
+  using: docker
+  image: Dockerfile
+inputs:
+  aws-access-key-id:  
+    description: 'AWS Access Key Id'
+    required: true
+  aws-secret-access-key:  
+    description: 'AWS Access Key Secret'
+    required: true
+  aws-region:  
+    description: 'AWS Region'
+    required: true
+  aws-s3-bucket-name:  
+    description: 'AWS S3 Bucket Name where the dist file is uploaded'
+    required: true
+  dist-file-path:  
+    description: 'Path of the zipped distribution file'
+    required: true
+
