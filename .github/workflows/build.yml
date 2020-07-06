@@ -10,8 +10,8 @@ jobs:
       - name: Upload to S3 as artifact
         uses: ./
         with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: us-east-1
-          dist_file_path: './dummy91.zip'
-          aws_s3_bucket_name: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          dist-file-path: './dummy91.zip'
+          aws-s3-bucket-name: ${{ secrets.AWS_S3_BUCKET_NAME }}
