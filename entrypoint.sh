@@ -24,10 +24,12 @@ EOF
 
 BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
 REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
+METADATA="{\"initiator\":\"$GITHUB_ACTOR\", \"commit_sha\":\"$GITHUB_SHA\"}"
 
 sh -c "aws s3 cp ${INPUT_DIST_FILE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip \
               --profile upload-artifacts-profile \
-              --no-progress" 
+              --no-progress \
+              --metadata $METADATA" 
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 null
