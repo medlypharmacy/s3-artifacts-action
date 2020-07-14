@@ -4,7 +4,7 @@ The purpose of this action is to upload the zipped artifact from github actions 
 
 This allows the organisation to package and upload all their artifacts to the same S3 bucket for deployment.
 
-# #Usage
+## Usage
 
 This action requires 5 inputs: S3 Bucket Name, AWS Access Key Id, Secret Access Key, AWS Region, and the name of the zipped distribution file created by the github action.
 
