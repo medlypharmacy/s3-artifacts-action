@@ -26,7 +26,5 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: us-east-1
           dist_file_path: './dummy91.zip'
-          aws_s3_bucket_name: ${{ secrets.AWS_S3_BUCKET_NAME }}
 ```
