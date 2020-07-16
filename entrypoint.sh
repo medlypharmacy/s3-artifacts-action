@@ -2,9 +2,12 @@
 
 set -e
 
+[ -z $INPUT_AWS_S3_BUCKET_NAME ] && INPUT_AWS_S3_BUCKET_NAME="medly-dev-build-artifacts"
+
+[ -z $INPUT_AWS_REGION ] && INPUT_AWS_REGION="us-east-1"
+
 if [[ -z "$INPUT_AWS_ACCESS_KEY_ID" || \
-      -z "$INPUT_AWS_SECRET_ACCESS_KEY" || \
-      -z "$INPUT_AWS_REGION" ]]; then
+      -z "$INPUT_AWS_SECRET_ACCESS_KEY" ]]; then
   echo "Please provide AWS credentials and region."
   exit 1
 fi
@@ -14,6 +17,7 @@ if [[ -z "$INPUT_AWS_S3_BUCKET_NAME" || \
   echo "Please provide S3 bucket and local dist file."
   exit 1
 fi
+
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 ${INPUT_AWS_ACCESS_KEY_ID}
