@@ -2,8 +2,6 @@
 
 set -e
 
-[ -z $INPUT_AWS_ACCESS_KEY_ID ] && INPUT_AWS_ACCESS_KEY_ID=${secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID}
-
 if [[ -z "$INPUT_AWS_ACCESS_KEY_ID" || \
       -z "$INPUT_AWS_SECRET_ACCESS_KEY" || \
       -z "$INPUT_AWS_REGION" ]]; then
@@ -16,7 +14,6 @@ if [[ -z "$INPUT_AWS_S3_BUCKET_NAME" || \
   echo "Please provide S3 bucket and local dist file."
   exit 1
 fi
-
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 ${INPUT_AWS_ACCESS_KEY_ID}
