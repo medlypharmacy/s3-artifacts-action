@@ -6,8 +6,8 @@ This allows the organisation to package and upload all their artifacts to the sa
 
 ## Usage
 
-This action requires 5 inputs: S3 Bucket Name, AWS Access Key Id, Secret Access Key, AWS Region, and the name of the zipped distribution file created by the github action.
-
+This action requires 5 inputs: AWS Access Key Id, Secret Access Key, and the name of the zipped distribution file created by the github action.
+You can give an optional  S3 Bucket Name, and  AWS Region. The defaults are that of our dev environment.
 The following a snippet of how this can be used. You can also find the same example snippet is also available at ```.github/workflows/build.yml``` of this repository
 
 ```yaml
