@@ -6,7 +6,7 @@ runs:
 inputs:
   aws_access_key_id:  
     description: 'AWS Access Key Id'
-    required: true
+    required: false
   aws_secret_access_key:  
     description: 'AWS Access Key Secret'
     required: true
