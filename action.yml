@@ -15,8 +15,14 @@ inputs:
     required: true
   aws_s3_bucket_name:  
     description: 'AWS S3 Bucket Name where the dist file is uploaded'
-    required: true
+    required: false
   dist_file_path:  
     description: 'Path of the zipped distribution file'
     required: true
+  destination_path:  
+    description: 'Relative path where the file needs to be updated on S3'
+    required: false
+  resource_type:  
+    description: 'FILE or DIRECTORY. Default is FILE'
+    required: false
 
