@@ -37,8 +37,7 @@ fi
 sh -c "aws s3 cp ${INPUT_DIST_FILE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
         --no-progress \
-        --metadata $METADATA \
-        ${ARGS} " 
+        --metadata $METADATA" 
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 null
