@@ -29,7 +29,7 @@ jobs:
           dist_file_path: './dummy91.zip'
 ```
 
-Optional Parameters
+## Optional Parameters
 
 You can use additional optional parameters depending on your usecase. You can specify a custom S3 bucket. You can also specify whether the upload needs to go to a custom path. Also, if the source and destination is a directory, you can specify the resource type as a directory. If nothing is specified, it is assumed that the DIST file is a zip file.
 
