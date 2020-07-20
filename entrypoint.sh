@@ -32,12 +32,12 @@ if [[ -z "$DESTINATION_PATH" ]]; then
   DESTINATION_PATH=${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip	
 fi
 
-[[ $RESOURCE_TYPE="DIRECTORY" ]] && ARGS=" --recursive" || ARGS=""
+[[ $INPUT_RESOURCE_TYPE='DIRECTORY' ]] && ARGS=" --recursive" || ARGS=""
 
 sh -c "aws s3 cp ${INPUT_DIST_FILE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
         --no-progress \
-        --metadata $METADATA" 
+        --metadata $METADATA $ARGS" 
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 null
