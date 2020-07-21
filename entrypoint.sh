@@ -11,7 +11,7 @@ if [[ -z "$INPUT_AWS_ACCESS_KEY_ID" || \
   exit 1
 fi
 
-if [[ -z "$INPUT_DIST_FILE_PATH" ]]; then
+if [[ -z "$INPUT_SOURCE_PATH" ]]; then
   echo "Please provide local dist file."
   exit 1
 fi
@@ -34,7 +34,7 @@ fi
 
 [[ $INPUT_RESOURCE_TYPE == 'DIRECTORY' ]] && ARGS=" --recursive" || ARGS=""
 
-sh -c "aws s3 cp ${INPUT_DIST_FILE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
+sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
         --no-progress \
         --metadata $METADATA $ARGS" 

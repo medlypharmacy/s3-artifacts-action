@@ -26,7 +26,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID}}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY}}
-          dist_file_path: './dummy91.zip'
+          source_path: './dummy91.zip'
 ```
 
 ## Optional Parameters
@@ -45,7 +45,7 @@ publish-s3-artifact-folder:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
-          dist_file_path: './dummyfolder'
+          source_path: './dummyfolder'
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"     
 ```
