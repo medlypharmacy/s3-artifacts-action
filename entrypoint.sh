@@ -28,7 +28,7 @@ REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
 METADATA="{\\\"initiator\\\":\\\"$GITHUB_ACTOR\\\",\\\"commit_sha\\\":\\\"$GITHUB_SHA\\\"}"
 
 
-if [[ -z "$DESTINATION_PATH" ]]; then
+if [[ -z "$INPUT_DESTINATION_PATH" ]]; then
   DESTINATION_PATH=${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip
 else
   DESTINATION_PATH=$INPUT_DESTINATION_PATH
