@@ -31,7 +31,7 @@ METADATA="{\\\"initiator\\\":\\\"$GITHUB_ACTOR\\\",\\\"commit_sha\\\":\\\"$GITHU
 if [[ -z "$DESTINATION_PATH" ]]; then
   DESTINATION_PATH=${BRANCH_NAME}/${GITHUB_RUN_NUMBER}.zip
 else
-  DESTINATION_PATH=$DESTINATION_PATH
+  DESTINATION_PATH=$INPUT_DESTINATION_PATH
 fi
 
 [[ $INPUT_RESOURCE_TYPE == 'DIRECTORY' ]] && ARGS=" --recursive" || ARGS=""
