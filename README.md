@@ -47,7 +47,7 @@ publish-s3-artifact-folder:
           aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
           source_path: './dummyfolder'
           destination_path: "/dummyartifacts"
-          resource_type: "DIRECTORY"     
+          resource_type: "DIRECTORY"  
 ```
 
 ## To generate SWAGGER to html
@@ -63,4 +63,5 @@ publish-s3-artifact-folder:
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
           source_path: './dummy_swagger.yml'
-          resource_type: "SWAGGER"     
+          resource_type: "SWAGGER"
+```
