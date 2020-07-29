@@ -35,8 +35,9 @@ else
 fi
 
 if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER' ]]; then
-  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o /tmp/swagger
-  INPUT_SOURCE_PATH=/tmp/swagger
+  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o "/tmp/swagger-docs/${INPUT_SOURCE_PATH%.*}"
+  INPUT_SOURCE_PATH=/tmp/swagger-docs
+  DESTINATION_PATH=swagger-docs
 fi
 
 [[ $INPUT_RESOURCE_TYPE == 'DIRECTORY' || $INPUT_RESOURCE_TYPE == 'SWAGGER' ]] && ARGS=" --recursive" || ARGS=""

@@ -12,7 +12,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './dummy91.zip'
+          source_path: './samples/dummy91.zip'
   publish-s3-artifact-folder:
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './dummyfolder'
+          source_path: './samples/dummyfolder'
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"
   publish-swagger-docs:
@@ -34,6 +34,20 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './dummy_swagger.yml'
+          source_path: './samples/dummy_swagger.yml'
+          aws_s3_bucket: 'medly-dev-test-cases'
+          destination_path: "swagger-docs"
+          resource_type: "SWAGGER"
+  publish-another-swagger-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Upload to S3 artifact folder
+        uses: medlypharmacy/s3-artifacts-action@master
+        with:
+          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
+          source_path: './samples/dummy_swagger1.yml'
+          aws_s3_bucket: 'medly-dev-test-cases'
           destination_path: "swagger-docs"
           resource_type: "SWAGGER"
