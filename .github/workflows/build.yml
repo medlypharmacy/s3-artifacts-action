@@ -25,3 +25,15 @@ jobs:
           source_path: './dummyfolder'
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"
+  publish-s3-artifact-folder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Upload to S3 artifact folder
+        uses: medlypharmacy/s3-artifacts-action@master
+        with:
+          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
+          source_path: './dummy_swagger.yml'
+          destination_path: "swagger-docs"
+          resource_type: "SWAGGER"

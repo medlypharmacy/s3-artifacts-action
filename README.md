@@ -49,3 +49,18 @@ publish-s3-artifact-folder:
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"     
 ```
+
+## To generate SWAGGER to html
+```yaml
+publish-s3-artifact-folder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Upload to S3 artifact folder
+        uses: medlypharmacy/s3-artifacts-action@master
+        with:
+          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
+          aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
+          source_path: './dummy_swagger.yml'
+          resource_type: "SWAGGER"     
