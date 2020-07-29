@@ -35,7 +35,7 @@ jobs:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           source_path: './samples/dummy_swagger.yml'
-          aws_s3_bucket: 'medly-dev-test-cases'
+          aws_s3_bucket_name: 'medly-dev-test-cases'
           destination_path: "swagger-docs"
           resource_type: "SWAGGER"
   publish-another-swagger-docs:
@@ -48,6 +48,6 @@ jobs:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           source_path: './samples/dummy_swagger1.yml'
-          aws_s3_bucket: 'medly-dev-test-cases'
+          aws_s3_bucket_name: 'medly-dev-test-cases'
           destination_path: "swagger-docs"
           resource_type: "SWAGGER"
