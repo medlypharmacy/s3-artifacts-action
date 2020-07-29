@@ -16,13 +16,6 @@ if [[ -z "$INPUT_SOURCE_PATH" ]]; then
   exit 1
 fi
 
-function upload_artifact(){
-  sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
-        --profile upload-artifacts-profile \
-        --no-progress \
-        --metadata $METADATA $ARGS" 
-}
-
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 ${INPUT_AWS_ACCESS_KEY_ID}
 ${INPUT_AWS_SECRET_ACCESS_KEY}
@@ -42,7 +35,7 @@ else
 fi
 
 if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER' ]]; then
-  java -jar swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o /tmp/swagger
+  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o /tmp/swagger
   INPUT_SOURCE_PATH=/tmp/swagger
 fi
 
