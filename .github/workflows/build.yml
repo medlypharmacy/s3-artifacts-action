@@ -25,7 +25,7 @@ jobs:
           source_path: './dummyfolder'
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"
-  publish-s3-artifact-folder:
+  publish-swagger-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
