@@ -35,7 +35,8 @@ else
 fi
 
 if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER' ]]; then
-  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o "/tmp/swagger-docs/${INPUT_SOURCE_PATH%.*}"
+  INPUT_FILE=$(basename -- "$INPUT_SOURCE_PATH")
+  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o "/tmp/swagger-docs/${INPUT_FILE%.*}"
   INPUT_SOURCE_PATH=/tmp/swagger-docs
   DESTINATION_PATH=swagger-docs
 fi
