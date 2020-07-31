@@ -43,7 +43,7 @@ if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
   for SWAGGER_SPECIFICATION_FILE in $SWAGGER_SPECIFICATION_FILES
   do
     echo "Generating html docs for: $SWAGGER_SPECIFICATION_FILE"
-    SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE_PATH)"
+    SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE)"
     java -jar /swagger-codegen-cli.jar generate \
          -i $SWAGGER_SPECIFICATION_FILE \
          -l html2 \
