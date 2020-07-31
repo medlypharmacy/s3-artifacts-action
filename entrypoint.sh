@@ -39,10 +39,15 @@ if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
     echo "Source path must be a directory for the resource type  "
     exit 1
   fi 
-  for SWAGGER_SPECIFICATION_FILE_PATH in "$INPUT_SOURCE_PATH/*.yml"
+  SWAGGER_SPECIFICATION_FILES=$(ls $INPUT_SOURCE_PATH/*.yml)
+  for SWAGGER_SPECIFICATION_FILE in $SWAGGER_SPECIFICATION_FILES
   do
+    echo "Generating html docs for: $SWAGGER_SPECIFICATION_FILE"
     SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE_PATH)"
-    java -jar /swagger-codegen-cli.jar generate -i $SWAGGER_SPECIFICATION_FILE_PATH -l html2 -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
+    java -jar /swagger-codegen-cli.jar generate \
+         -i $SWAGGER_SPECIFICATION_FILE \
+         -l html2 \
+         -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
   done
   INPUT_SOURCE_PATH=/tmp
   DESTINATION_PATH=swagger-docs
