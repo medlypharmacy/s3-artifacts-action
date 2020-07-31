@@ -37,7 +37,7 @@ jobs:
           source_path: './samples/api/spec'
           aws_s3_bucket_name: 'medly-dev-test-cases'
           resource_type: "SWAGGER_TO_HTML"
-  publish-swagger-docs:
+  publish-test-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
