@@ -43,7 +43,7 @@ if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
   do
     SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE_PATH)"
     java -jar /swagger-codegen-cli.jar generate \
-         -i $SWAGGER_SPECIFICATION_FILE \
+         -i $SWAGGER_SPECIFICATION_FILE_PATH \
          -l html2 -o "/tmp/swagger-docs/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
   done
   INPUT_SOURCE_PATH=/tmp/swagger-docs
