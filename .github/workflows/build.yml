@@ -46,6 +46,6 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './samples/api/spec'
+          source_path: './samples/build/reports/jacoco/codeCoverageReport/html'
           aws_s3_bucket_name: 'medly-dev-test-cases'
           resource_type: "TEST_COVERAGE"
