@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetUserPermissions.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">user</a> &gt; <span class="el_source">GetUserPermissions.kt</span></div><h1>GetUserPermissions.kt</h1><pre class="source lang-java linenums">package user
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Array
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="fc" id="L11">data class GetUserPermissionsParams(</span>
+<span class="fc" id="L12">  val userName: String?</span>
+)
+
+<span class="fc" id="L15">class GetUserPermissionsParamSetter : ParamSetter&lt;GetUserPermissionsParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: GetUserPermissionsParams) {
+<span class="fc" id="L17">    ps.setObject(1, params.userName)</span>
+<span class="fc" id="L18">  }</span>
+}
+
+<span class="fc" id="L21">data class GetUserPermissionsResult(</span>
+<span class="fc" id="L22">  val permissions: Array&lt;String&gt;</span>
+)
+
+<span class="fc" id="L25">class GetUserPermissionsRowMapper : RowMapper&lt;GetUserPermissionsResult&gt; {</span>
+<span class="fc" id="L26">  override fun map(rs: ResultSet): GetUserPermissionsResult = GetUserPermissionsResult(</span>
+<span class="fc" id="L27">  permissions = rs.getArray(&quot;permissions&quot;).array as kotlin.Array&lt;kotlin.String&gt;)</span>
+}
+
+<span class="fc" id="L30">class GetUserPermissionsQuery : Query&lt;GetUserPermissionsParams, GetUserPermissionsResult&gt; {</span>
+<span class="fc" id="L31">  override val sql: String = &quot;select permissions from users where user_name=?&quot;</span>
+
+<span class="fc" id="L33">  override val mapper: RowMapper&lt;GetUserPermissionsResult&gt; = GetUserPermissionsRowMapper()</span>
+
+<span class="fc" id="L35">  override val paramSetter: ParamSetter&lt;GetUserPermissionsParams&gt; = GetUserPermissionsParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

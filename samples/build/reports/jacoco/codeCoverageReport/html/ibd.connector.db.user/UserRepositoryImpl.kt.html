@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserRepositoryImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.connector.db.user</a> &gt; <span class="el_source">UserRepositoryImpl.kt</span></div><h1>UserRepositoryImpl.kt</h1><pre class="source lang-java linenums">package ibd.connector.db.user
+
+import ibd.core.claims.Permissions
+import ibd.core.roles.Roles
+import ibd.core.users.*
+import javax.inject.Inject
+import javax.inject.Singleton
+import javax.sql.DataSource
+import norm.query
+import user.*
+
+@Singleton
+<span class="fc" id="L13">class UserRepositoryImpl(@Inject private val dataSource: DataSource) : UserRepository {</span>
+    override fun save(user: UserCreatePayload): UserBasicDetails {
+<span class="pc" id="L15">        val result = dataSource.connection.use { connection -&gt;</span>
+<span class="fc" id="L16">            AddUserQuery().query(connection, AddUserParams(user.name, user.email, user.role, user.permissions.toTypedArray()))</span>
+        }
+<span class="fc" id="L18">        return UserBasicDetails(result[0].id, result[0].fullName, result[0].userName)</span>
+    }
+
+    override fun getUser(userName: String): User =
+<span class="pc" id="L22">        dataSource.connection.use { GetUserQuery().query(it, GetUserParams(userName)) }</span>
+<span class="fc" id="L23">            .map { User(it.id, it.fullName, it.userName, Roles.from(it.role), it.permissions.map { permission -&gt; Permissions.from(permission)!! }) }.first()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

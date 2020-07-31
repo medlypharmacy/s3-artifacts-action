@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InProgressViaCMMValidationStrategy.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.core.tasks.validator</a> &gt; <span class="el_source">InProgressViaCMMValidationStrategy.kt</span></div><h1>InProgressViaCMMValidationStrategy.kt</h1><pre class="source lang-java linenums">package ibd.core.tasks.validator
+
+import ibd.core.errors.Error
+import ibd.core.models.AdditionalInformation
+import ibd.core.statemachine.Status
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L9">class InProgressViaCMMValidationStrategy : AdditionalInfoValidationStrategy {</span>
+<span class="fc" id="L10">    private val MAX_KEYCODE_LENGTH = 13</span>
+<span class="fc" id="L11">    private val CASE_ID_LENGTH = 6</span>
+
+<span class="fc" id="L13">    override fun status(): Status = Status.IN_PROGRESS_VIA_CMM</span>
+
+    override fun validate(additionalInformation: AdditionalInformation): Error? {
+<span class="fc bfc" id="L16" title="All 8 branches covered.">        if (additionalInformation.keycode.isNullOrEmpty() || additionalInformation.caseId == null) return Error(&quot;keycode or case id is empty&quot;)</span>
+<span class="fc bfc" id="L17" title="All 4 branches covered.">        if (!(additionalInformation.keycode.matches(&quot;[0-9]+&quot;.toRegex()) &amp;&amp; additionalInformation.keycode.length &lt;= MAX_KEYCODE_LENGTH)) return Error(&quot;keycode should have max length $MAX_KEYCODE_LENGTH and contain only digits&quot;)</span>
+<span class="fc bfc" id="L18" title="All 4 branches covered.">        if (!(additionalInformation.caseId.matches(&quot;[A-Za-z0-9]+&quot;.toRegex()) &amp;&amp; additionalInformation.caseId.length == CASE_ID_LENGTH)) return Error(&quot;caseId should be of length $CASE_ID_LENGTH and only contain alphanumeric characters&quot;)</span>
+<span class="fc" id="L19">        return null</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

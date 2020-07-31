@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateStatusAndAdditionalInformation.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">UpdateStatusAndAdditionalInformation.kt</span></div><h1>UpdateStatusAndAdditionalInformation.kt</h1><pre class="source lang-java linenums">package task
+
+import java.math.BigDecimal
+import java.sql.Date
+import java.sql.PreparedStatement
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+
+<span class="fc" id="L11">data class UpdateStatusAndAdditionalInformationParams(</span>
+<span class="fc" id="L12">  val keycode: String?,</span>
+<span class="fc" id="L13">  val caseId: String?,</span>
+<span class="fc" id="L14">  val pbmCompany: String?,</span>
+<span class="fc" id="L15">  val paNotPossibleReason: String?,</span>
+<span class="fc" id="L16">  val paNotPossibleNote: String?,</span>
+<span class="fc" id="L17">  val paNumber: String?,</span>
+<span class="fc" id="L18">  val paApprovalDate: Date?,</span>
+<span class="fc" id="L19">  val extraInfoType: String?,</span>
+<span class="fc" id="L20">  val extraInfoNote: String?,</span>
+<span class="fc" id="L21">  val paDeniedReferenceNumber: String?,</span>
+<span class="fc" id="L22">  val paDeniedDate: Date?,</span>
+<span class="fc" id="L23">  val paDeniedReason: String?,</span>
+<span class="fc" id="L24">  val paDeniedNote: String?,</span>
+<span class="fc" id="L25">  val altMedicationDrug: String?,</span>
+<span class="fc" id="L26">  val altMedicationSig: String?,</span>
+<span class="fc" id="L27">  val altMedicationQuantity: BigDecimal?,</span>
+<span class="fc" id="L28">  val altMedicationRefills: Int?,</span>
+<span class="fc" id="L29">  val extraMedicalInfoType: String?,</span>
+<span class="fc" id="L30">  val extraMedicalInfoNote: String?,</span>
+<span class="fc" id="L31">  val status: String?,</span>
+<span class="fc" id="L32">  val id: Int?</span>
+)
+
+<span class="fc" id="L35">class UpdateStatusAndAdditionalInformationParamSetter :</span>
+    ParamSetter&lt;UpdateStatusAndAdditionalInformationParams&gt; {
+  override fun map(ps: PreparedStatement, params: UpdateStatusAndAdditionalInformationParams) {
+<span class="fc" id="L38">    ps.setObject(1, params.keycode)</span>
+<span class="fc" id="L39">    ps.setObject(2, params.caseId)</span>
+<span class="fc" id="L40">    ps.setObject(3, params.pbmCompany)</span>
+<span class="fc" id="L41">    ps.setObject(4, params.paNotPossibleReason)</span>
+<span class="fc" id="L42">    ps.setObject(5, params.paNotPossibleNote)</span>
+<span class="fc" id="L43">    ps.setObject(6, params.paNumber)</span>
+<span class="fc" id="L44">    ps.setObject(7, params.paApprovalDate)</span>
+<span class="fc" id="L45">    ps.setObject(8, params.extraInfoType)</span>
+<span class="fc" id="L46">    ps.setObject(9, params.extraInfoNote)</span>
+<span class="fc" id="L47">    ps.setObject(10, params.paDeniedReferenceNumber)</span>
+<span class="fc" id="L48">    ps.setObject(11, params.paDeniedDate)</span>
+<span class="fc" id="L49">    ps.setObject(12, params.paDeniedReason)</span>
+<span class="fc" id="L50">    ps.setObject(13, params.paDeniedNote)</span>
+<span class="fc" id="L51">    ps.setObject(14, params.altMedicationDrug)</span>
+<span class="fc" id="L52">    ps.setObject(15, params.altMedicationSig)</span>
+<span class="fc" id="L53">    ps.setObject(16, params.altMedicationQuantity)</span>
+<span class="fc" id="L54">    ps.setObject(17, params.altMedicationRefills)</span>
+<span class="fc" id="L55">    ps.setObject(18, params.extraMedicalInfoType)</span>
+<span class="fc" id="L56">    ps.setObject(19, params.extraMedicalInfoNote)</span>
+<span class="fc" id="L57">    ps.setObject(20, params.status)</span>
+<span class="fc" id="L58">    ps.setObject(21, params.id)</span>
+<span class="fc" id="L59">  }</span>
+}
+
+<span class="fc" id="L62">class UpdateStatusAndAdditionalInformationCommand :</span>
+    Command&lt;UpdateStatusAndAdditionalInformationParams&gt; {
+<span class="fc" id="L64">  override val sql: String = &quot;&quot;&quot;</span>
+      |update pa_tasks
+      |set additional_information.keycode=coalesce(?, (additional_information).keycode),
+      |additional_information.case_id=coalesce(?, (additional_information).case_id),
+      |additional_information.pbm_company=coalesce(?, (additional_information).pbm_company),
+      |additional_information.pa_not_possible_reason=coalesce(?, (additional_information).pa_not_possible_reason),
+      |additional_information.pa_not_possible_note=coalesce(?, (additional_information).pa_not_possible_note),
+      |additional_information.pa_number=coalesce(?, (additional_information).pa_number),
+      |additional_information.pa_approval_date=coalesce(?,(additional_information).pa_approval_date),
+      |additional_information.extra_info_type=coalesce(?,(additional_information).extra_info_type),
+      |additional_information.extra_info_note=coalesce(?,(additional_information).extra_info_note),
+      |additional_information.pa_denied_reference_number=coalesce(?,(additional_information).pa_denied_reference_number),
+      |additional_information.pa_denied_date=coalesce(?,(additional_information).pa_denied_date),
+      |additional_information.pa_denied_reason=coalesce(?,(additional_information).pa_denied_reason),
+      |additional_information.pa_denied_note=coalesce(?,(additional_information).pa_denied_note),
+      |additional_information.alt_medication_drug=coalesce(?,(additional_information).alt_medication_drug),
+      |additional_information.alt_medication_sig=coalesce(?,(additional_information).alt_medication_sig),
+      |additional_information.alt_medication_quantity=coalesce(?,(additional_information).alt_medication_quantity),
+      |additional_information.alt_medication_refills=coalesce(?,(additional_information).alt_medication_refills),
+      |additional_information.extra_medical_info_type=coalesce(?,(additional_information).extra_medical_info_type),
+      |additional_information.extra_medical_info_note=coalesce(?,(additional_information).extra_medical_info_note),
+      |status=coalesce(?, status)
+      |where id=?;
+<span class="fc" id="L87">      &quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L89">  override val paramSetter: ParamSetter&lt;UpdateStatusAndAdditionalInformationParams&gt; =</span>
+<span class="fc" id="L90">      UpdateStatusAndAdditionalInformationParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

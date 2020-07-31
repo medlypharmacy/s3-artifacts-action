@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DocumentRepositoryImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.connector.db.document</a> &gt; <span class="el_source">DocumentRepositoryImpl.kt</span></div><h1>DocumentRepositoryImpl.kt</h1><pre class="source lang-java linenums">package ibd.connector.db.document
+
+import document.*
+import ibd.core.datetime.toDBTimeStamp
+import ibd.core.datetime.toOffsetDateTime
+import ibd.core.document.Document
+import ibd.core.document.DocumentEntity
+import ibd.core.document.DocumentRepository
+import ibd.core.statemachine.Status
+import javax.inject.Inject
+import javax.inject.Singleton
+import javax.sql.DataSource
+import norm.command
+import norm.query
+
+@Singleton
+<span class="fc" id="L17">class DocumentRepositoryImpl(@Inject private val dataSource: DataSource) : DocumentRepository {</span>
+    override fun add(document: DocumentEntity): Unit =
+<span class="pc" id="L19">        dataSource.connection.use {</span>
+<span class="fc" id="L20">            AddDocumentCommand().command(it, AddDocumentParams(document.taskId, document.name, document.path, document.userName, document.uploadedAt.toDBTimeStamp()))</span>
+<span class="fc" id="L21">        }</span>
+
+    override fun getDocuments(taskId: Int) =
+<span class="pc" id="L24">        dataSource.connection.use {</span>
+<span class="fc" id="L25">            GetDocumentsQuery().query(it, GetDocumentsParams(taskId, null))</span>
+<span class="fc" id="L26">        }.map { Document(it.id, it.name, it.s3Path, it.uploadedBy, it.userFullName, Status.valueOf(it.status), it.uploadedAt.toOffsetDateTime()) }</span>
+
+    override fun getDocumentByTd(documentId: Int): Document? =
+<span class="pc" id="L29">        dataSource.connection.use {</span>
+<span class="fc" id="L30">            GetDocumentByIdQuery().query(it, GetDocumentByIdParams(documentId))</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        }.firstOrNull()?.let { Document(it.id, it.name, it.s3Path, it.uploadedBy, it.userFullName, Status.valueOf(it.status), it.uploadedAt.toOffsetDateTime()) }</span>
+
+    override fun delete(documentId: Int) =
+<span class="pc" id="L34">        dataSource.connection.use {</span>
+<span class="fc" id="L35">            DeleteDocumentCommand().command(it, DeleteDocumentParams(documentId))</span>
+<span class="fc" id="L36">        }.updatedRecordsCount</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

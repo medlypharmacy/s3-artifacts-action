@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskControllerImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.api.tasks</a> &gt; <span class="el_source">TaskControllerImpl.kt</span></div><h1>TaskControllerImpl.kt</h1><pre class="source lang-java linenums">package ibd.api.tasks
+
+import ibd.api.security.userName
+import ibd.api.tasks.models.*
+import ibd.api.tasks.models.ResponseType.*
+import ibd.core.datetime.DateFormatter
+import ibd.core.datetime.DateProvider
+import ibd.core.exceptions.AccessDeniedException
+import ibd.core.exceptions.BadRequestException
+import ibd.core.exceptions.EntityNotFoundException
+import ibd.core.statemachine.Status
+import ibd.core.tasks.TaskService
+import io.micronaut.security.authentication.Authentication
+import java.time.OffsetDateTime
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L20">class TaskControllerImpl(</span>
+    @Inject private val taskService: TaskService,
+    @Inject private val dateProvider: DateProvider,
+    @Inject private val dateFormatter: DateFormatter
+) : TaskController {
+    override fun get(page: Int?, limit: Int?, authentication: Authentication): Array&lt;TaskResponse&gt; =
+<span class="fc bfc" id="L26" title="All 4 branches covered.">        taskService.getUnclaimedTasks(page ?: 0, limit ?: 10, authentication.userName()).map {</span>
+<span class="fc" id="L27">            TaskResponse(</span>
+<span class="fc" id="L28">                it.id, it.rxNumber, it.patientFirstName, it.patientLastName, it.patientDob.toString(), it.drugName, it.fillNo, it.refills, it.amount.toBigDecimal(), it.doctorFirstName, it.doctorLastName, it.timestamp.toString(), it.insuranceCode, it.type.name</span>
+<span class="fc" id="L29">            )</span>
+<span class="fc" id="L30">        }.toTypedArray()</span>
+
+    override fun claimTask(id: Int, authentication: Authentication): Response&lt;Any&gt; =
+<span class="fc" id="L33">        try {</span>
+<span class="fc" id="L34">            taskService.claimTask(id, authentication.userName())</span>
+<span class="fc" id="L35">            Response(SUCCESS, &quot;Task claimed successfully&quot;, null)</span>
+<span class="fc" id="L36">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L37">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L38">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L39">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L40">        } catch (e: BadRequestException) {</span>
+<span class="fc" id="L41">            Response(BAD_REQUEST, e.message, null)</span>
+<span class="fc" id="L42">        }</span>
+
+    override fun unclaimTask(id: Int, authentication: Authentication): Response&lt;Any&gt; =
+<span class="fc" id="L45">        try {</span>
+<span class="fc" id="L46">            taskService.unclaimTask(id, authentication.userName())</span>
+<span class="fc" id="L47">            Response(SUCCESS, &quot;Task unclaimed successfully&quot;, null)</span>
+<span class="fc" id="L48">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L49">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L50">        } catch (e: BadRequestException) {</span>
+<span class="fc" id="L51">            Response(BAD_REQUEST, e.message, null)</span>
+<span class="fc" id="L52">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L53">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L54">        }</span>
+
+    override fun getTaskDetails(id: Int, authentication: Authentication): Response&lt;TaskDetailsResponse&gt; =
+<span class="fc" id="L57">        try {</span>
+<span class="fc" id="L58">            val (taskDetails, documents) = taskService.getTaskDetails(id, authentication.userName())</span>
+<span class="fc" id="L59">            val documentResponse = documents.map { Document(it.id, it.name, it.uploadedByFullName, it.status, dateFormatter.formatDate(it.uploadedAt), authentication.userName() == it.uploadedByUserName) }</span>
+<span class="pc bpc" id="L60" title="2 of 4 branches missed.">            Response(SUCCESS, null, TaskDetailsResponse(Patient(taskDetails.patient.firstName, taskDetails.patient.lastName, taskDetails.patient.dob?.let { dateFormatter.formatDate(it) }, taskDetails.patient.dob?.let { getAge(it) }, taskDetails.patient.gender, taskDetails.patient.email,</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">                taskDetails.patient.mobile, taskDetails.patient.telephone, taskDetails.patient.address?.let { addr -&gt; Address(addr.line1, addr.line2, addr.city, addr.state, addr.zipcode) }),</span>
+<span class="fc" id="L62">                Insurance(taskDetails.insurance.id, taskDetails.insurance.bin, taskDetails.insurance.pcn, taskDetails.insurance.groupNo, taskDetails.insurance.companyName, taskDetails.insurance.type),</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">                Doctor(taskDetails.doctor.npi, taskDetails.doctor.firstName, taskDetails.doctor.lastName, taskDetails.doctor.office, taskDetails.doctor.email, taskDetails.doctor.faxNo, taskDetails.doctor.address?.let { addr -&gt; Address(addr.line1, addr.line2, addr.city, addr.state, addr.zipcode) }),</span>
+<span class="fc" id="L64">                Prescription(taskDetails.prescription.rxNo, dateFormatter.formatDate(taskDetails.prescription.createdAt!!), taskDetails.prescription.drugName, taskDetails.prescription.quantity!!, taskDetails.prescription.refillNumber, taskDetails.prescription.refills, taskDetails.prescription.direction, taskDetails.prescription.daySupply, taskDetails.prescription.amount, taskDetails.prescription.awp, taskDetails.prescription.drugForm, taskDetails.prescription.diagnosisCode, taskDetails.prescription.ndc),</span>
+<span class="fc" id="L65">                AdditionalInformation(taskDetails.additionalInformation.keycode, taskDetails.additionalInformation.caseId, taskDetails.additionalInformation.pbmCompanyName, taskDetails.additionalInformation.paNotPossibleReason, taskDetails.additionalInformation.paNotPossibleNote,</span>
+<span class="fc" id="L66">                    taskDetails.additionalInformation.paNumber, taskDetails.additionalInformation.paApprovedDate, taskDetails.additionalInformation.extraInfoRequestedType, taskDetails.additionalInformation.extraInfoRequestedNote, taskDetails.additionalInformation.extraMedicalInfoRequestedType, taskDetails.additionalInformation.extraMedicalInfoRequestedNote,</span>
+<span class="fc" id="L67">                    taskDetails.additionalInformation.paDeniedReferenceNumber, taskDetails.additionalInformation.paDeniedDate, taskDetails.additionalInformation.paDeniedReason, taskDetails.additionalInformation.paDeniedNote,</span>
+<span class="fc" id="L68">                    taskDetails.additionalInformation.altMedicationDrugName, taskDetails.additionalInformation.altMedicationSig, taskDetails.additionalInformation.altMedicationQuantity, taskDetails.additionalInformation.altMedicationRefills),</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">                taskDetails.status, documentResponse, getDaysInProgress(taskDetails.timestampForLatestStatusUpdate), taskDetails.nextPossibleStatuses, taskDetails.claimedBy?.let { User(it.userName, it.fullName) }, taskService.canClaim(taskDetails.type, taskDetails.status, authentication.userName())))</span>
+<span class="fc" id="L70">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L71">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L72">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L73">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L74">        }</span>
+
+    private fun getDaysInProgress(offsetDateAndTime: OffsetDateTime?): Long {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (offsetDateAndTime == null) return 0</span>
+<span class="fc" id="L78">        return dateProvider.getDifferenceInDays(dateProvider.getCurrentDateTime(), offsetDateAndTime)</span>
+    }
+
+    override fun updateStatusAndAdditionalInformation(id: Int, body: TaskStatusUpdateRequest, authentication: Authentication): Response&lt;Any&gt; =
+<span class="fc" id="L82">        try {</span>
+<span class="fc" id="L83">            taskService.updateStatusAndAdditionalInformation(id, body.status, body.additionalInformation.let {</span>
+<span class="fc" id="L84">                ibd.core.models.AdditionalInformation(</span>
+<span class="fc" id="L85">                    it.keycode, it.caseId, it.pbmCompanyName, it.paNotPossibleReason, it.paNotPossibleNote, it.paNumber, it.paApprovedDate,</span>
+<span class="fc" id="L86">                    it.extraInfoRequestedType, it.extraInfoRequestedNote, it.extraMedicalInfoRequestedType, it.extraMedicalInfoRequestedNote,</span>
+<span class="fc" id="L87">                    it.paDeniedReferenceNumber, it.paDeniedDate, it.paDeniedReason, it.paDeniedNote, it.altMedicationDrugName, it.altMedicationSig, it.altMedicationQuantity, it.altMedicationRefills</span>
+<span class="fc" id="L88">                )</span>
+<span class="fc" id="L89">            }, authentication.userName())</span>
+<span class="fc" id="L90">            Response(SUCCESS, &quot;Status &amp; additional information updated successfully&quot;, null)</span>
+<span class="fc" id="L91">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L92">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L93">        } catch (e: BadRequestException) {</span>
+<span class="fc" id="L94">            Response(BAD_REQUEST, e.message, null)</span>
+<span class="fc" id="L95">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L96">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L97">        }</span>
+
+    override fun getUploadUrl(taskId: Int, fileName: String, authentication: Authentication): Response&lt;String&gt; =
+<span class="fc" id="L100">        try {</span>
+<span class="fc" id="L101">            Response(SUCCESS, null, taskService.getUploadUrl(taskId, fileName, authentication.userName()))</span>
+<span class="fc" id="L102">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L103">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L104">        }</span>
+
+    override fun markDocumentAsUploaded(taskId: Int, fileName: String, uploadFileName: String, authentication: Authentication): Response&lt;String&gt; =
+<span class="fc" id="L107">        try {</span>
+<span class="fc" id="L108">            taskService.markDocumentAsUploaded(taskId, fileName, uploadFileName, authentication.userName())</span>
+<span class="fc" id="L109">            Response(SUCCESS, &quot;Marked successfully&quot;, null)</span>
+<span class="fc" id="L110">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L111">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L112">        }</span>
+
+    override fun getDownloadUrl(taskId: Int, documentId: Int): Response&lt;String&gt; =
+<span class="fc" id="L115">        try {</span>
+<span class="fc" id="L116">            Response(SUCCESS, null, taskService.getDownloadUrl(documentId))</span>
+<span class="fc" id="L117">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L118">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L119">        }</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">    override fun getTaskHistory(taskId: Int) = taskService.getTaskHistory(taskId).map { TaskHistoryNodeResponse(AdditionalInformation(it.additionalInformation?.keycode,</span>
+<span class="fc bfc" id="L122" title="All 8 branches covered.">        it.additionalInformation?.caseId, it.additionalInformation?.pbmCompanyName, it.additionalInformation?.paNotPossibleReason, it.additionalInformation?.paNotPossibleNote,</span>
+<span class="fc bfc" id="L123" title="All 8 branches covered.">        it.additionalInformation?.paNumber, it.additionalInformation?.paApprovedDate, it.additionalInformation?.extraInfoRequestedType, it.additionalInformation?.extraInfoRequestedNote,</span>
+<span class="fc bfc" id="L124" title="All 6 branches covered.">        it.additionalInformation?.extraMedicalInfoRequestedType, it.additionalInformation?.extraMedicalInfoRequestedNote, it.additionalInformation?.paDeniedReferenceNumber,</span>
+<span class="fc bfc" id="L125" title="All 8 branches covered.">        it.additionalInformation?.paDeniedDate, it.additionalInformation?.paDeniedReason, it.additionalInformation?.paDeniedNote, it.additionalInformation?.altMedicationDrugName,</span>
+<span class="fc bfc" id="L126" title="All 6 branches covered.">        it.additionalInformation?.altMedicationSig, it.additionalInformation?.altMedicationQuantity, it.additionalInformation?.altMedicationRefills), it.status, it.userName, it.type,</span>
+<span class="fc" id="L127">        dateFormatter.formatDate(it.eventTimestamp), it.documents.map { Document(it.id, it.name, it.uploadedByFullName, it.status, dateFormatter.formatDate(it.uploadedAt), false) }) }.toTypedArray()</span>
+
+    override fun deleteDocument(taskId: Int, documentId: Int, authentication: Authentication): Response&lt;String&gt; =
+<span class="fc" id="L130">        try {</span>
+<span class="fc" id="L131">            taskService.deleteDocument(documentId, authentication.userName())</span>
+<span class="fc" id="L132">            Response(SUCCESS, &quot;Document deleted successfully&quot;, null)</span>
+<span class="fc" id="L133">        } catch (e: EntityNotFoundException) {</span>
+<span class="fc" id="L134">            Response(NOT_FOUND, e.message, null)</span>
+<span class="fc" id="L135">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L136">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L137">        }</span>
+
+    private fun getAge(date: Date) =
+<span class="fc" id="L140">        dateProvider.getDifferenceInYears(dateProvider.getCurrentDateTime(), dateProvider.dateToOffsetDateTime(date))</span>
+
+    override fun getTasksOverview(status: String?, page: Int?, limit: Int?, authentication: Authentication): Response&lt;Array&lt;TaskOverviewResponse&gt;&gt; =
+<span class="fc" id="L143">        try {</span>
+<span class="fc bfc" id="L144" title="All 4 branches covered.">            val result = taskService.getTasksOverview(status, page ?: 0, limit ?: 10, authentication.userName()).map {</span>
+<span class="fc" id="L145">                TaskOverviewResponse(it.associateName, it.associateRole, it.drugName, it.rxNo, it.status.toString(), it.taskType.toString(), getDaysInProgress(it.taskClaimedAt).toInt())</span>
+<span class="fc" id="L146">            }.toTypedArray()</span>
+<span class="fc" id="L147">            Response(SUCCESS, null, result)</span>
+<span class="fc" id="L148">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L149">            Response(FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L150">        }</span>
+
+    override fun getStatusWiseTaskBreakdown(authentication: Authentication): Map&lt;Status, Int&gt; =
+<span class="fc" id="L153">        taskService.getStatusWiseTaskBreakdown(authentication.userName())</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

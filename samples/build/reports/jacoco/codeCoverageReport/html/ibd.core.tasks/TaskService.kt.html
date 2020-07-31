@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.core.tasks</a> &gt; <span class="el_source">TaskService.kt</span></div><h1>TaskService.kt</h1><pre class="source lang-java linenums">package ibd.core.tasks
+
+import ibd.core.claims.Permissions
+import ibd.core.datetime.DateProvider
+import ibd.core.document.Document
+import ibd.core.document.DocumentEntity
+import ibd.core.document.DocumentRepository
+import ibd.core.document.S3Repository
+import ibd.core.exceptions.AccessDeniedException
+import ibd.core.exceptions.BadRequestException
+import ibd.core.exceptions.EntityNotFoundException
+import ibd.core.logs.LogRepository
+import ibd.core.models.*
+import ibd.core.roles.Roles
+import ibd.core.statemachine.Status
+import ibd.core.tasks.validator.AdditionalInfoValidator
+import ibd.core.users.UserRepository
+import java.time.OffsetDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L23">class TaskService(</span>
+    @Inject private val taskRepository: TaskRepository,
+    @Inject private val s3Repository: S3Repository,
+    @Inject private val documentRepository: DocumentRepository,
+    @Inject private val userRepository: UserRepository,
+    @Inject private val logRepository: LogRepository,
+    @Inject private val dateProvider: DateProvider,
+    @Inject private val additionalInformationValidator: AdditionalInfoValidator
+) {
+
+<span class="fc" id="L33">    private val permissionToTaskTypeMapping = mapOf(</span>
+<span class="fc" id="L34">        Permissions.PA_TASKS to TaskType.PA_REQUIRED,</span>
+<span class="fc" id="L35">        Permissions.PA_2K_PLUS_TASKS to TaskType.PA_2K_PLUS_REQUIRED,</span>
+<span class="fc" id="L36">        Permissions.PA_DENIED_TASKS to TaskType.PA_DENIED,</span>
+<span class="fc" id="L37">        Permissions.APPEAL_REQUESTED_TASKS to TaskType.APPEAL_REQUESTED_CMM)</span>
+
+<span class="fc" id="L39">    private val statusToTaskTypeMapping = mapOf(</span>
+<span class="fc" id="L40">        Status.PA_DENIED_VIA_CMM to TaskType.PA_DENIED,</span>
+<span class="fc" id="L41">        Status.APPEAL_REQUESTED_VIA_CMM to TaskType.APPEAL_REQUESTED_CMM</span>
+    )
+
+<span class="fc" id="L44">    private val terminalStatuses = listOf(</span>
+<span class="fc" id="L45">        Status.PA_APPROVED_VIA_CMM, Status.PA_APPROVED_VIA_FAX, Status.PA_NOT_POSSIBLE, Status.FILE_AND_CLOSE, Status.ALT_MEDICATION_PROVIDED</span>
+    )
+
+    fun getUnclaimedTasks(page: Int, limit: Int, userName: String): List&lt;Task&gt; {
+<span class="fc" id="L49">        val permissions = userRepository.getUser(userName).permissions</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        val statusTypesList = permissions.mapNotNull { permissionToTaskTypeMapping[it] }</span>
+<span class="fc" id="L51">        return taskRepository.getUnclaimedTasks(page * limit, limit, statusTypesList.toTypedArray())</span>
+    }
+
+    fun getUserTasks(userName: String, status: String?, page: Int, limit: Int): List&lt;MyTask&gt; {
+<span class="fc" id="L55">        return taskRepository.getMyTasks(userName, status, page * limit, limit)</span>
+    }
+
+    fun claimTask(id: Int, userName: String) {
+<span class="fc" id="L59">        val basicTaskDetails = taskRepository.getBasicTaskDetails(id)</span>
+<span class="fc" id="L60">        val permissions = userRepository.getUser(userName).permissions</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!hasClaimAccess(basicTaskDetails.type, permissions)) throw AccessDeniedException(&quot;You don't have access to this task&quot;)</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (basicTaskDetails.userName != null) throw BadRequestException(&quot;Task is already claimed&quot;)</span>
+<span class="fc" id="L63">        taskRepository.claim(id, userName, dateProvider.getCurrentDateTime())</span>
+<span class="fc" id="L64">    }</span>
+
+    private fun hasClaimAccess(taskType: TaskType, permissions: List&lt;Permissions&gt;) =
+<span class="fc" id="L67">        permissions.map { permissionToTaskTypeMapping[it] }.contains(taskType)</span>
+
+    fun canClaim(taskType: TaskType, status: Status?, userName: String) =
+<span class="fc bfc" id="L70" title="All 4 branches covered.">        hasClaimAccess(taskType, userRepository.getUser(userName).permissions) &amp;&amp; !terminalStatuses.contains(status)</span>
+
+    fun unclaimTask(id: Int, userName: String) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        val emailAssociatedWithTask = taskRepository.getBasicTaskDetails(id).userName</span>
+<span class="fc" id="L74">            ?: throw BadRequestException(&quot;Task is already unclaimed&quot;)</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (emailAssociatedWithTask != userName) throw AccessDeniedException(&quot;You can only un-claim tasks claimed by you&quot;)</span>
+<span class="fc" id="L76">        taskRepository.unclaim(id, userName)</span>
+<span class="fc" id="L77">    }</span>
+
+    fun getTaskDetails(id: Int, userName: String): Pair&lt;TaskDetails, List&lt;Document&gt;&gt; {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        val taskDetails = taskRepository.getTaskDetails(id)</span>
+<span class="fc" id="L81">            ?: throw EntityNotFoundException(&quot;Task with id $id not found&quot;)</span>
+<span class="fc bfc" id="L82" title="All 4 branches covered.">        val requiredPermission = permissionToTaskTypeMapping.filter { it.value == taskDetails.type }.map { it.key }.first()</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (!userRepository.getUser(userName).permissions.contains(requiredPermission)) throw AccessDeniedException(&quot;You don't have the required permissions to access this task&quot;)</span>
+<span class="fc" id="L84">        val documents = documentRepository.getDocuments(id)</span>
+<span class="fc" id="L85">        return Pair(taskDetails, documents)</span>
+    }
+
+    fun updateStatusAndAdditionalInformation(id: Int, status: Status?, additionalInformation: AdditionalInformation, userName: String) {
+<span class="fc" id="L89">        val basicTaskDetails = taskRepository.getBasicTaskDetails(id)</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (!basicTaskDetails.userName.equals(userName)) throw AccessDeniedException(&quot;You can only update tasks claimed by you&quot;)</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (!isStatusUpdateAllowed(basicTaskDetails.status, status)) throw BadRequestException(&quot;This status transition is not allowed&quot;)</span>
+<span class="fc" id="L92">        val error = additionalInformationValidator.validate(status, additionalInformation)</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (error != null) throw BadRequestException(error.message)</span>
+<span class="fc" id="L94">        taskRepository.updateStatusAndAdditionalInformation(id, status, additionalInformation)</span>
+<span class="fc" id="L95">        val permissions = userRepository.getUser(userName).permissions</span>
+<span class="fc" id="L96">        val taskType = statusToTaskTypeMapping[status!!]</span>
+<span class="fc bfc" id="L97" title="All 4 branches covered.">        if (taskType != null &amp;&amp; !hasClaimAccess(taskType, permissions))</span>
+<span class="fc" id="L98">            taskRepository.unclaimAndUpdateTaskType(id, taskType)</span>
+<span class="fc" id="L99">    }</span>
+
+    private fun isStatusUpdateAllowed(currentStatus: Status?, nextStatus: Status?): Boolean {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (currentStatus == null) {</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">            return nextStatus == Status.INITIALIZED</span>
+        }
+<span class="fc" id="L105">        return currentStatus.nextPossibleStatuses().contains(nextStatus)</span>
+    }
+
+    fun getUploadUrl(taskId: Int, fileName: String, userName: String): String {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (!taskRepository.getBasicTaskDetails(taskId).userName.equals(userName))</span>
+<span class="fc" id="L110">            throw AccessDeniedException(&quot;You can only upload document for tasks claimed by you&quot;)</span>
+<span class="fc" id="L111">        return s3Repository.getUploadUrl(&quot;tasks/$taskId/$fileName&quot;)</span>
+    }
+
+    fun markDocumentAsUploaded(taskId: Int, actualFileName: String, fileNameForUpload: String, userName: String) {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (!taskRepository.getBasicTaskDetails(taskId).userName.equals(userName))</span>
+<span class="fc" id="L116">            throw AccessDeniedException(&quot;You can only upload document for tasks claimed by you&quot;)</span>
+<span class="fc" id="L117">        val path = &quot;tasks/$taskId/$fileNameForUpload&quot;</span>
+<span class="fc" id="L118">        documentRepository.add(DocumentEntity(taskId, actualFileName, path, userName, dateProvider.getCurrentDateTime()))</span>
+<span class="fc" id="L119">    }</span>
+
+    fun getDownloadUrl(documentId: Int): String {
+<span class="pc bpc" id="L122" title="1 of 4 branches missed.">        val path = documentRepository.getDocumentByTd(documentId)?.path</span>
+<span class="fc" id="L123">            ?: throw EntityNotFoundException(&quot;Document with id $documentId does not exist&quot;)</span>
+<span class="fc" id="L124">        return s3Repository.getDownloadUrl(path)</span>
+    }
+
+    fun deleteDocument(documentId: Int, userName: String) {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        val document = documentRepository.getDocumentByTd(documentId)</span>
+<span class="fc" id="L129">            ?: throw EntityNotFoundException(&quot;Document with id $documentId does not exist&quot;)</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (document.uploadedByUserName != userName) throw AccessDeniedException(&quot;You can delete only those documents uploaded by you&quot;)</span>
+<span class="fc" id="L131">        s3Repository.delete(document.path)</span>
+<span class="fc" id="L132">        documentRepository.delete(documentId)</span>
+<span class="fc" id="L133">    }</span>
+
+<span class="pc bpc" id="L135" title="1 of 6 branches missed.">    private fun getDocumentsUploadedInPeriod(minDateTime: OffsetDateTime, maxDateTime: OffsetDateTime, documents: List&lt;Document&gt;) = documents.filter { it.uploadedAt in minDateTime..maxDateTime }</span>
+
+    private fun getLastNonNullUserName(nodeIndex: Int, logEntryNodes: List&lt;LogEntry&gt;): String? =
+<span class="fc bfc" id="L138" title="All 8 branches covered.">        logEntryNodes.filterIndexed { index, logEntry -&gt; (index &gt;= nodeIndex) &amp;&amp; (index == logEntryNodes.size - 1 || logEntry.userName != null) }[0].userName</span>
+
+    fun getTaskHistory(taskId: Int): List&lt;TaskHistoryNode&gt; {
+<span class="fc" id="L141">        val documents = documentRepository.getDocuments(taskId)</span>
+<span class="fc" id="L142">        val logEntryNodes = logRepository.getTaskHistory(taskId)</span>
+<span class="fc" id="L143">        val firstNode = TaskHistoryNode(null, null, null, null, dateProvider.dateToOffsetDateTime(taskRepository.getTaskDetails(taskId)!!.prescription.createdAt!!), listOf())</span>
+<span class="fc" id="L144">        return logEntryNodes.mapIndexed { index, logEntry -&gt;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            TaskHistoryNode(logEntry.additionalInformation, logEntry.status, getLastNonNullUserName(index, logEntryNodes), logEntry.type, logEntry.eventTimestamp, getDocumentsUploadedInPeriod(logEntry.eventTimestamp, if (index == 0) dateProvider.getCurrentDateTime() else logEntryNodes[index - 1].eventTimestamp, documents))</span>
+<span class="fc" id="L146">        } + firstNode</span>
+    }
+
+<span class="fc" id="L149">    fun getTaskGroupedByStatus(userName: String) = taskRepository.getTaskGroupedByStatus(userName)</span>
+
+    fun getTasksOverview(status: String?, page: Int, limit: Int, userName: String): List&lt;TaskOverview&gt; {
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (userRepository.getUser(userName).role == Roles.MANAGER)</span>
+<span class="fc" id="L153">            return taskRepository.getTasksOverview(status, page * limit, limit)</span>
+<span class="fc" id="L154">        else throw AccessDeniedException(&quot;Only managers are allowed to access this&quot;)</span>
+    }
+
+    fun getStatusWiseTaskBreakdown(userName: String): Map&lt;Status, Int&gt; {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (userRepository.getUser(userName).role == Roles.MANAGER)</span>
+<span class="fc" id="L159">            return taskRepository.getStatusWiseTaskBreakdown()</span>
+<span class="fc" id="L160">        else throw AccessDeniedException(&quot;Only managers are allowed to access this&quot;)</span>
+    }
+}
+
+<span class="fc" id="L164">data class TaskHistoryNode(</span>
+<span class="fc" id="L165">    val additionalInformation: AdditionalInformation?,</span>
+<span class="fc" id="L166">    val status: Status?,</span>
+<span class="fc" id="L167">    val userName: String?,</span>
+<span class="fc" id="L168">    val type: TaskType?,</span>
+<span class="fc" id="L169">    val eventTimestamp: OffsetDateTime,</span>
+<span class="fc" id="L170">    val documents: List&lt;Document&gt;</span>
+)
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

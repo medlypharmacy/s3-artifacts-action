@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientUpdatedEventHandler.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.event.patient</a> &gt; <span class="el_source">PatientUpdatedEventHandler.kt</span></div><h1>PatientUpdatedEventHandler.kt</h1><pre class="source lang-java linenums">package ibd.event.patient
+
+import ibd.connector.db.prescription.Address
+import ibd.connector.db.prescription.Patient
+import ibd.connector.db.prescription.PrescriptionRepository
+import ibd.event.EventHandler
+import javax.inject.Inject
+
+<span class="fc" id="L9">class PatientUpdatedEventHandler(@Inject private val prescriptionRepository: PrescriptionRepository) : EventHandler&lt;PatientUpdatedEvent&gt; {</span>
+    override fun handle(event: PatientUpdatedEvent, pharmacyId: String) =
+<span class="fc" id="L11">        prescriptionRepository.updatePatient(</span>
+<span class="fc" id="L12">            Patient(event.mmsId, event.firstName, event.lastName, event.dob, event.gender, event.email, event.mobile, event.telephone, Address(event.address.line1, event.address.line2, event.address.city, event.address.state, event.address.zipcode)),</span>
+<span class="fc" id="L13">            pharmacyId)</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

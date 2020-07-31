@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AddDocument.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">document</a> &gt; <span class="el_source">AddDocument.kt</span></div><h1>AddDocument.kt</h1><pre class="source lang-java linenums">package document
+
+import java.sql.PreparedStatement
+import java.sql.Timestamp
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+
+<span class="fc" id="L10">data class AddDocumentParams(</span>
+<span class="fc" id="L11">  val taskId: Int?,</span>
+<span class="fc" id="L12">  val name: String?,</span>
+<span class="fc" id="L13">  val path: String?,</span>
+<span class="fc" id="L14">  val userName: String?,</span>
+<span class="fc" id="L15">  val uploadedAt: Timestamp?</span>
+)
+
+<span class="fc" id="L18">class AddDocumentParamSetter : ParamSetter&lt;AddDocumentParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: AddDocumentParams) {
+<span class="fc" id="L20">    ps.setObject(1, params.taskId)</span>
+<span class="fc" id="L21">    ps.setObject(2, params.name)</span>
+<span class="fc" id="L22">    ps.setObject(3, params.path)</span>
+<span class="fc" id="L23">    ps.setObject(4, params.userName)</span>
+<span class="fc" id="L24">    ps.setObject(5, params.uploadedAt)</span>
+<span class="fc" id="L25">    ps.setObject(6, params.taskId)</span>
+<span class="fc" id="L26">  }</span>
+}
+
+<span class="fc" id="L29">class AddDocumentCommand : Command&lt;AddDocumentParams&gt; {</span>
+<span class="fc" id="L30">  override val sql: String = &quot;&quot;&quot;</span>
+      |insert into documents(task_id, name, s3_path, uploaded_by, status, uploaded_at)
+      |select ?, ?, ?, ?, status, ? from pa_tasks where id = ?
+<span class="fc" id="L33">      &quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L35">  override val paramSetter: ParamSetter&lt;AddDocumentParams&gt; = AddDocumentParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

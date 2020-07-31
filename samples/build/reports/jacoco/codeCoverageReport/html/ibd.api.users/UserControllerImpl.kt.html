@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserControllerImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.api.users</a> &gt; <span class="el_source">UserControllerImpl.kt</span></div><h1>UserControllerImpl.kt</h1><pre class="source lang-java linenums">package ibd.api.users
+
+import ibd.api.security.userName
+import ibd.api.users.models.CreateUserRequest
+import ibd.api.users.models.CreateUserResponse
+import ibd.api.users.models.MyTaskResponse
+import ibd.core.datetime.DateFormatter
+import ibd.core.datetime.DateProvider
+import ibd.core.statemachine.Status
+import ibd.core.tasks.TaskService
+import ibd.core.users.UserCreatePayload
+import ibd.core.users.UserService
+import io.micronaut.security.authentication.Authentication
+import java.time.OffsetDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L19">class UserControllerImpl(</span>
+    @Inject private val taskService: TaskService,
+    @Inject private val userService: UserService,
+    @Inject private val dateProvider: DateProvider,
+    @Inject private val dateFormatter: DateFormatter
+) : UserController {
+
+    override fun getMyTasks(status: String?, page: Int?, limit: Int?, authentication: Authentication) =
+<span class="fc bfc" id="L27" title="All 4 branches covered.">        taskService.getUserTasks(authentication.userName(), status, page ?: 0, limit ?: 10).map {</span>
+<span class="pc bpc" id="L28" title="2 of 4 branches missed.">            MyTaskResponse(it.id, it.rxNumber, it.patientFirstName, it.patientLastName, it.patientDob?.let { dateFormatter.formatDate(it) }, it.drugName, it.doctorFirstName, it.doctorLastName, it.status, it.type.toString(), getDaysInProgress(it.taskClaimedAt).toInt(), it.createdAt?.let { dateFormatter.formatDate(it) })</span>
+<span class="fc" id="L29">        }.toTypedArray()</span>
+
+    override fun createUsers(body: CreateUserRequest): CreateUserResponse {
+<span class="fc" id="L32">        val user = userService.create(UserCreatePayload(body.email, &quot;${body.firstName} ${body.lastName}&quot;, body.ibdRole, body.ibdClaims))</span>
+<span class="fc" id="L33">        return CreateUserResponse(user.id, user.userName, user.fullName)</span>
+    }
+
+    override fun getDashboard(authentication: Authentication): Map&lt;Status, Int&gt; {
+<span class="fc" id="L37">        return taskService.getTaskGroupedByStatus(authentication.userName())</span>
+    }
+
+    private fun getDaysInProgress(offsetDateAndTime: OffsetDateTime?): Long {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (offsetDateAndTime == null) return 0</span>
+<span class="fc" id="L42">        return dateProvider.getDifferenceInDays(dateProvider.getCurrentDateTime(), offsetDateAndTime)</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

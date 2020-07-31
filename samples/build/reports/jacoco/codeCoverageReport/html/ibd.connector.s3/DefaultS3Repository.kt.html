@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultS3Repository.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.connector.s3</a> &gt; <span class="el_source">DefaultS3Repository.kt</span></div><h1>DefaultS3Repository.kt</h1><pre class="source lang-java linenums">package ibd.connector.s3
+
+import com.amazonaws.HttpMethod
+import com.amazonaws.services.s3.AmazonS3
+import ibd.core.document.S3Repository
+import io.micronaut.context.annotation.Value
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L12">class DefaultS3Repository(@Inject private val s3Client: AmazonS3) : S3Repository {</span>
+
+    @Value(&quot;\${bucket-name}&quot;)
+<span class="pc" id="L15">    lateinit var bucketName: String</span>
+
+    override fun getUploadUrl(path: String): String =
+<span class="fc" id="L18">        s3Client.generatePresignedUrl(bucketName, path, Date().also { it.time += 1000 * 60 }, HttpMethod.PUT).toString()</span>
+
+    override fun getDownloadUrl(path: String): String =
+<span class="fc" id="L21">        s3Client.generatePresignedUrl(bucketName, path, Date().also { it.time += 1000 * 60 }, HttpMethod.GET).toString()</span>
+
+<span class="fc" id="L23">    override fun delete(path: String) = s3Client.deleteObject(bucketName, path)</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

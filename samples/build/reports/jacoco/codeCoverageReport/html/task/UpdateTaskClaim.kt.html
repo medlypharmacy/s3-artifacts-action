@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateTaskClaim.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">UpdateTaskClaim.kt</span></div><h1>UpdateTaskClaim.kt</h1><pre class="source lang-java linenums">package task
+
+import java.sql.PreparedStatement
+import java.sql.Timestamp
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+
+<span class="fc" id="L10">data class UpdateTaskClaimParams(</span>
+<span class="fc" id="L11">  val userName: String?,</span>
+<span class="fc" id="L12">  val claimDate: Timestamp?,</span>
+<span class="fc" id="L13">  val status: String?,</span>
+<span class="fc" id="L14">  val id: Int?</span>
+)
+
+<span class="fc" id="L17">class UpdateTaskClaimParamSetter : ParamSetter&lt;UpdateTaskClaimParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: UpdateTaskClaimParams) {
+<span class="fc" id="L19">    ps.setObject(1, params.userName)</span>
+<span class="fc" id="L20">    ps.setObject(2, params.claimDate)</span>
+<span class="fc" id="L21">    ps.setObject(3, params.status)</span>
+<span class="fc" id="L22">    ps.setObject(4, params.id)</span>
+<span class="fc" id="L23">  }</span>
+}
+
+<span class="fc" id="L26">class UpdateTaskClaimCommand : Command&lt;UpdateTaskClaimParams&gt; {</span>
+<span class="fc" id="L27">  override val sql: String = &quot;&quot;&quot;</span>
+      |update pa_tasks p  set user_name=?, task_claimed_at=?, status=COALESCE(status, ?) where p.id=?;
+<span class="fc" id="L29">      |&quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L31">  override val paramSetter: ParamSetter&lt;UpdateTaskClaimParams&gt; = UpdateTaskClaimParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

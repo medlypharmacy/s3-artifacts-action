@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AddUser.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">user</a> &gt; <span class="el_source">AddUser.kt</span></div><h1>AddUser.kt</h1><pre class="source lang-java linenums">package user
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Array
+import kotlin.Int
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="fc" id="L12">data class AddUserParams(</span>
+<span class="fc" id="L13">  val name: String?,</span>
+<span class="fc" id="L14">  val email: String?,</span>
+<span class="fc" id="L15">  val role: String?,</span>
+<span class="fc" id="L16">  val permissions: Array&lt;String&gt;?</span>
+)
+
+<span class="fc" id="L19">class AddUserParamSetter : ParamSetter&lt;AddUserParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: AddUserParams) {
+<span class="fc" id="L21">    ps.setObject(1, params.name)</span>
+<span class="fc" id="L22">    ps.setObject(2, params.email)</span>
+<span class="fc" id="L23">    ps.setObject(3, params.role)</span>
+<span class="fc" id="L24">    ps.setArray(4, ps.connection.createArrayOf(&quot;varchar&quot;, params.permissions))</span>
+<span class="fc" id="L25">  }</span>
+}
+
+<span class="fc" id="L28">data class AddUserResult(</span>
+<span class="fc" id="L29">  val id: Int,</span>
+<span class="fc" id="L30">  val userName: String,</span>
+<span class="fc" id="L31">  val fullName: String,</span>
+<span class="nc" id="L32">  val role: String,</span>
+<span class="nc" id="L33">  val permissions: Array&lt;String&gt;</span>
+)
+
+<span class="fc" id="L36">class AddUserRowMapper : RowMapper&lt;AddUserResult&gt; {</span>
+<span class="fc" id="L37">  override fun map(rs: ResultSet): AddUserResult = AddUserResult(</span>
+<span class="fc" id="L38">  id = rs.getObject(&quot;id&quot;) as kotlin.Int,</span>
+<span class="fc" id="L39">    userName = rs.getObject(&quot;user_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L40">    fullName = rs.getObject(&quot;full_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L41">    role = rs.getObject(&quot;role&quot;) as kotlin.String,</span>
+<span class="fc" id="L42">    permissions = rs.getArray(&quot;permissions&quot;).array as kotlin.Array&lt;kotlin.String&gt;)</span>
+}
+
+<span class="fc" id="L45">class AddUserQuery : Query&lt;AddUserParams, AddUserResult&gt; {</span>
+<span class="fc" id="L46">  override val sql: String = &quot;&quot;&quot;</span>
+      |insert into users(full_name, user_name, role, permissions)
+      |values(?, ?, ?, ?) returning *;
+<span class="fc" id="L49">      |&quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L51">  override val mapper: RowMapper&lt;AddUserResult&gt; = AddUserRowMapper()</span>
+
+<span class="fc" id="L53">  override val paramSetter: ParamSetter&lt;AddUserParams&gt; = AddUserParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateDoctor.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">prescription</a> &gt; <span class="el_source">UpdateDoctor.kt</span></div><h1>UpdateDoctor.kt</h1><pre class="source lang-java linenums">package prescription
+
+import java.sql.PreparedStatement
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+import org.postgresql.util.PGobject
+
+<span class="fc" id="L10">data class UpdateDoctorParams(</span>
+<span class="fc" id="L11">  val doctorNpi: String?,</span>
+<span class="fc" id="L12">  val doctorFirstName: String?,</span>
+<span class="fc" id="L13">  val doctorLastName: String?,</span>
+<span class="fc" id="L14">  val doctorMobile: String?,</span>
+<span class="fc" id="L15">  val doctorEmail: String?,</span>
+<span class="fc" id="L16">  val doctorFax: String?,</span>
+<span class="fc" id="L17">  val doctorAddress: PGobject?,</span>
+<span class="fc" id="L18">  val doctorMmsId: Int?,</span>
+<span class="fc" id="L19">  val pharmacyId: String?</span>
+)
+
+<span class="fc" id="L22">class UpdateDoctorParamSetter : ParamSetter&lt;UpdateDoctorParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: UpdateDoctorParams) {
+<span class="fc" id="L24">    ps.setObject(1, params.doctorNpi)</span>
+<span class="fc" id="L25">    ps.setObject(2, params.doctorFirstName)</span>
+<span class="fc" id="L26">    ps.setObject(3, params.doctorLastName)</span>
+<span class="fc" id="L27">    ps.setObject(4, params.doctorMobile)</span>
+<span class="fc" id="L28">    ps.setObject(5, params.doctorEmail)</span>
+<span class="fc" id="L29">    ps.setObject(6, params.doctorFax)</span>
+<span class="fc" id="L30">    ps.setObject(7, params.doctorAddress)</span>
+<span class="fc" id="L31">    ps.setObject(8, params.doctorMmsId)</span>
+<span class="fc" id="L32">    ps.setObject(9, params.pharmacyId)</span>
+<span class="fc" id="L33">  }</span>
+}
+
+<span class="fc" id="L36">class UpdateDoctorCommand : Command&lt;UpdateDoctorParams&gt; {</span>
+<span class="fc" id="L37">  override val sql: String = &quot;&quot;&quot;</span>
+      |update prescriptions set doctor_npi=?, doctor_first_name=?, doctor_last_name=?, doctor_mobile=?, doctor_email=?, doctor_fax=?, doctor_address=?
+      |where doctor_mms_id = ? and pharmacy_id = ?
+<span class="fc" id="L40">      &quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L42">  override val paramSetter: ParamSetter&lt;UpdateDoctorParams&gt; = UpdateDoctorParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

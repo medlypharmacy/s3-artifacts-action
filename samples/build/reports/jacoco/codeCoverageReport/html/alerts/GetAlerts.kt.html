@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetAlerts.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">alerts</a> &gt; <span class="el_source">GetAlerts.kt</span></div><h1>GetAlerts.kt</h1><pre class="source lang-java linenums">package alerts
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Int
+import kotlin.Long
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="fc" id="L12">data class GetAlertsParams(</span>
+<span class="fc" id="L13">  val resolveStatus: String?,</span>
+<span class="fc" id="L14">  val offset: Long?,</span>
+<span class="fc" id="L15">  val limit: Long?</span>
+)
+
+<span class="fc" id="L18">class GetAlertsParamSetter : ParamSetter&lt;GetAlertsParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: GetAlertsParams) {
+<span class="fc" id="L20">    ps.setObject(1, params.resolveStatus)</span>
+<span class="fc" id="L21">    ps.setObject(2, params.resolveStatus)</span>
+<span class="fc" id="L22">    ps.setObject(3, params.offset)</span>
+<span class="fc" id="L23">    ps.setObject(4, params.limit)</span>
+<span class="fc" id="L24">  }</span>
+}
+
+<span class="fc" id="L27">data class GetAlertsResult(</span>
+<span class="fc" id="L28">  val id: Int,</span>
+<span class="fc" id="L29">  val associateUsername: String?,</span>
+<span class="fc" id="L30">  val alertType: String?,</span>
+<span class="fc" id="L31">  val alertDescription: String?,</span>
+<span class="fc" id="L32">  val taskId: Int?,</span>
+<span class="fc" id="L33">  val resolvedByUsername: String?</span>
+)
+
+<span class="fc" id="L36">class GetAlertsRowMapper : RowMapper&lt;GetAlertsResult&gt; {</span>
+<span class="fc" id="L37">  override fun map(rs: ResultSet): GetAlertsResult = GetAlertsResult(</span>
+<span class="fc" id="L38">  id = rs.getObject(&quot;id&quot;) as kotlin.Int,</span>
+<span class="fc" id="L39">    associateUsername = rs.getObject(&quot;associate_username&quot;) as kotlin.String?,</span>
+<span class="fc" id="L40">    alertType = rs.getObject(&quot;alert_type&quot;) as kotlin.String?,</span>
+<span class="fc" id="L41">    alertDescription = rs.getObject(&quot;alert_description&quot;) as kotlin.String?,</span>
+<span class="fc" id="L42">    taskId = rs.getObject(&quot;task_id&quot;) as kotlin.Int?,</span>
+<span class="fc" id="L43">    resolvedByUsername = rs.getObject(&quot;resolved_by_username&quot;) as kotlin.String?)</span>
+}
+
+<span class="fc" id="L46">class GetAlertsQuery : Query&lt;GetAlertsParams, GetAlertsResult&gt; {</span>
+<span class="fc" id="L47">  override val sql: String = &quot;&quot;&quot;</span>
+      |SELECT * FROM manager_alerts WHERE
+      |CASE
+      |	WHEN 'Resolved'=? THEN resolved_by_username IS NOT NULL
+      |	WHEN 'Unresolved'=? THEN resolved_by_username IS NULL
+      |	ELSE 'A'='A'
+      |END
+      |OFFSET ?
+      |LIMIT ?;
+<span class="fc" id="L56">      |&quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L58">  override val mapper: RowMapper&lt;GetAlertsResult&gt; = GetAlertsRowMapper()</span>
+
+<span class="fc" id="L60">  override val paramSetter: ParamSetter&lt;GetAlertsParams&gt; = GetAlertsParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MyTasks.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">MyTasks.kt</span></div><h1>MyTasks.kt</h1><pre class="source lang-java linenums">package task
+
+import java.sql.Date
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Timestamp
+import kotlin.Int
+import kotlin.Long
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="fc" id="L14">data class MyTasksParams(</span>
+<span class="fc" id="L15">  val userName: String?,</span>
+<span class="fc" id="L16">  val status: String?,</span>
+<span class="fc" id="L17">  val offset: Long?,</span>
+<span class="fc" id="L18">  val limit: Long?</span>
+)
+
+<span class="fc" id="L21">class MyTasksParamSetter : ParamSetter&lt;MyTasksParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: MyTasksParams) {
+<span class="fc" id="L23">    ps.setObject(1, params.userName)</span>
+<span class="fc" id="L24">    ps.setObject(2, params.status)</span>
+<span class="fc" id="L25">    ps.setObject(3, params.status)</span>
+<span class="fc" id="L26">    ps.setObject(4, params.offset)</span>
+<span class="fc" id="L27">    ps.setObject(5, params.limit)</span>
+<span class="fc" id="L28">  }</span>
+}
+
+<span class="fc" id="L31">data class MyTasksResult(</span>
+<span class="fc" id="L32">  val id: Int,</span>
+<span class="fc" id="L33">  val rxNumber: String,</span>
+<span class="fc" id="L34">  val patientFirstName: String,</span>
+<span class="fc" id="L35">  val patientLastName: String,</span>
+<span class="fc" id="L36">  val drugName: String,</span>
+<span class="fc" id="L37">  val patientDob: Date?,</span>
+<span class="fc" id="L38">  val doctorFirstName: String,</span>
+<span class="fc" id="L39">  val doctorLastName: String,</span>
+<span class="fc" id="L40">  val rxCreated: Timestamp?,</span>
+<span class="fc" id="L41">  val status: String?,</span>
+<span class="fc" id="L42">  val type: String,</span>
+<span class="fc" id="L43">  val taskClaimedAt: Timestamp?</span>
+)
+
+<span class="fc" id="L46">class MyTasksRowMapper : RowMapper&lt;MyTasksResult&gt; {</span>
+<span class="fc" id="L47">  override fun map(rs: ResultSet): MyTasksResult = MyTasksResult(</span>
+<span class="fc" id="L48">  id = rs.getObject(&quot;id&quot;) as kotlin.Int,</span>
+<span class="fc" id="L49">    rxNumber = rs.getObject(&quot;rx_number&quot;) as kotlin.String,</span>
+<span class="fc" id="L50">    patientFirstName = rs.getObject(&quot;patient_first_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L51">    patientLastName = rs.getObject(&quot;patient_last_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L52">    drugName = rs.getObject(&quot;drug_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L53">    patientDob = rs.getObject(&quot;patient_dob&quot;) as java.sql.Date?,</span>
+<span class="fc" id="L54">    doctorFirstName = rs.getObject(&quot;doctor_first_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L55">    doctorLastName = rs.getObject(&quot;doctor_last_name&quot;) as kotlin.String,</span>
+<span class="fc" id="L56">    rxCreated = rs.getObject(&quot;rx_created&quot;) as java.sql.Timestamp?,</span>
+<span class="fc" id="L57">    status = rs.getObject(&quot;status&quot;) as kotlin.String?,</span>
+<span class="fc" id="L58">    type = rs.getObject(&quot;type&quot;) as kotlin.String,</span>
+<span class="fc" id="L59">    taskClaimedAt = rs.getObject(&quot;task_claimed_at&quot;) as java.sql.Timestamp?)</span>
+}
+
+<span class="fc" id="L62">class MyTasksQuery : Query&lt;MyTasksParams, MyTasksResult&gt; {</span>
+<span class="fc" id="L63">  override val sql: String = &quot;&quot;&quot;</span>
+      |select
+      |t.id,
+      |p.rx_number,
+      |p.patient_first_name,
+      |p.patient_last_name,
+      |p.drug_name,
+      |p.patient_dob,
+      |p.doctor_first_name,
+      |p.doctor_last_name,
+      |p.rx_created,
+      |t.status,
+      |t.type,
+      |t.task_claimed_at
+      |from pa_tasks t, prescriptions p
+      |where
+      |p.id=t.prescription_id AND
+      |t.user_name=? AND
+      |('A'=COALESCE(?,'A') OR t.status=?)
+      |ORDER BY t.task_claimed_at NULLS LAST
+      |OFFSET ?
+      |LIMIT ?;
+<span class="fc" id="L85">      |&quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L87">  override val mapper: RowMapper&lt;MyTasksResult&gt; = MyTasksRowMapper()</span>
+
+<span class="fc" id="L89">  override val paramSetter: ParamSetter&lt;MyTasksParams&gt; = MyTasksParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

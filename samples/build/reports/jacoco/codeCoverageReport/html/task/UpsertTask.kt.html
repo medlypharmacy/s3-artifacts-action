@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpsertTask.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">UpsertTask.kt</span></div><h1>UpsertTask.kt</h1><pre class="source lang-java linenums">package task
+
+import java.sql.PreparedStatement
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+
+<span class="fc" id="L9">data class UpsertTaskParams(</span>
+<span class="fc" id="L10">  val type: String?,</span>
+<span class="fc" id="L11">  val rxno: String?,</span>
+<span class="fc" id="L12">  val fillNo: Int?</span>
+)
+
+<span class="fc" id="L15">class UpsertTaskParamSetter : ParamSetter&lt;UpsertTaskParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: UpsertTaskParams) {
+<span class="fc" id="L17">    ps.setObject(1, params.type)</span>
+<span class="fc" id="L18">    ps.setObject(2, params.rxno)</span>
+<span class="fc" id="L19">    ps.setObject(3, params.fillNo)</span>
+<span class="fc" id="L20">    ps.setObject(4, params.type)</span>
+<span class="fc" id="L21">  }</span>
+}
+
+<span class="fc" id="L24">class UpsertTaskCommand : Command&lt;UpsertTaskParams&gt; {</span>
+<span class="fc" id="L25">  override val sql: String = &quot;&quot;&quot;</span>
+      |insert into pa_tasks(prescription_id, type)
+      |select id, ? from prescriptions
+      |where rx_number = ? and fill_number = ?
+      |on conflict(prescription_id) DO UPDATE
+      |SET type=?
+<span class="fc" id="L31">      &quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L33">  override val paramSetter: ParamSetter&lt;UpsertTaskParams&gt; = UpsertTaskParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

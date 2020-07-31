@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskRepositoryImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.connector.db.task</a> &gt; <span class="el_source">TaskRepositoryImpl.kt</span></div><h1>TaskRepositoryImpl.kt</h1><pre class="source lang-java linenums">package ibd.connector.db.task
+
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import ibd.core.datetime.toDBTimeStamp
+import ibd.core.datetime.toOffsetDateTime
+import ibd.core.exceptions.EntityNotFoundException
+import ibd.core.extentions.enumValue
+import ibd.core.models.*
+import ibd.core.statemachine.Status
+import ibd.core.tasks.TaskRepository
+import ibd.core.users.UserBasicDetails
+import java.sql.Date
+import java.time.OffsetDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
+import javax.sql.DataSource
+import norm.command
+import norm.query
+import task.*
+
+@Singleton
+<span class="fc" id="L22">class TaskRepositoryImpl(@Inject private val dataSource: DataSource) : TaskRepository {</span>
+
+    override fun upsert(rxNo: String, fillNumber: Int, taskType: TaskType): Unit =
+<span class="pc" id="L25">        dataSource.connection.use {</span>
+<span class="fc" id="L26">            UpsertTaskCommand().command(it, UpsertTaskParams(taskType.name, rxNo, fillNumber))</span>
+<span class="fc" id="L27">        }</span>
+
+    override fun getUnclaimedTasks(offset: Int, limit: Int, types: Array&lt;TaskType&gt;) =
+<span class="pc" id="L30">        dataSource.connection.use {</span>
+<span class="fc" id="L31">            GetUnclaimedTasksQuery().query(it, GetUnclaimedTasksParams(types.map { it.toString() }.toTypedArray(), offset.toLong(), limit.toLong())).map {</span>
+<span class="fc" id="L32">                Task(it.id, it.rxNumber, it.patientFirstName, it.patientLastName, it.patientDob, it.drugName, it.refills, it.fillNumber, it.amount.toDouble(), it.doctorFirstName, it.doctorLastName, it.rxCreated, it.insuranceType, it.type.enumValue()!!)</span>
+<span class="fc" id="L33">            }</span>
+<span class="fc" id="L34">        }</span>
+
+    override fun claim(taskId: Int, userName: String, time: OffsetDateTime) =
+<span class="pc" id="L37">        dataSource.connection.use {</span>
+<span class="fc" id="L38">            UpdateTaskClaimCommand().command(it, UpdateTaskClaimParams(userName, time.toDBTimeStamp(), Status.INITIALIZED.toString(), taskId)).updatedRecordsCount</span>
+<span class="fc" id="L39">        }</span>
+
+    override fun getBasicTaskDetails(id: Int) =
+<span class="fc" id="L42">        dataSource.connection.use {</span>
+<span class="fc" id="L43">            val taskList = GetBasicTaskDetailsQuery().query(it, GetBasicTaskDetailsParams(id))</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (taskList.isEmpty())</span>
+<span class="fc" id="L45">                throw EntityNotFoundException(&quot;Task with id $id not found&quot;)</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            taskList.map { BasicTaskDetails(it.userName, it.type.enumValue()!!, it.status?.enumValue()) }.first()</span>
+<span class="fc" id="L47">        }</span>
+
+    override fun unclaim(taskId: Int, email: String) =
+<span class="pc" id="L50">        dataSource.connection.use {</span>
+<span class="fc" id="L51">            UpdateTaskUnclaimCommand().command(it, UpdateTaskUnclaimParams(taskId)).updatedRecordsCount</span>
+<span class="fc" id="L52">        }</span>
+
+    override fun getMyTasks(userName: String, status: String?, offset: Int, limit: Int): List&lt;MyTask&gt; =
+<span class="pc" id="L55">        dataSource.connection.use {</span>
+<span class="fc" id="L56">            MyTasksQuery().query(it, MyTasksParams(userName, status, offset.toLong(), limit.toLong())).map {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                MyTask(it.id, it.rxNumber, it.patientFirstName, it.patientLastName, it.patientDob, it.drugName, it.doctorFirstName, it.doctorLastName, it.status, it.type.enumValue()!!, it.taskClaimedAt?.toOffsetDateTime(), it.rxCreated)</span>
+<span class="fc" id="L58">            }</span>
+<span class="fc" id="L59">        }</span>
+
+    override fun getTaskDetails(taskId: Int) =
+<span class="pc" id="L62">        dataSource.connection.use {</span>
+<span class="fc" id="L63">            GetTaskDetailsQuery().query(it, GetTaskDetailsParams(taskId))</span>
+<span class="fc" id="L64">                .map {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                    TaskDetails(Patient(it.patientFirstName, it.patientLastName, it.patientDob, it.patientGender, it.patientEmail, it.patientMobile, it.patientTelephone, it.patientAddress?.let { addr -&gt; jacksonObjectMapper().readValue(addr.toString(), Address::class.java) }),</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                        Insurance(it.insuranceId, it.bin, it.pcn, it.groupNumber, it.insuranceName, it.insuranceType), Doctor(it.doctorNpi, it.doctorFirstName, it.doctorLastName, it.doctorMobile, it.doctorEmail, it.doctorFax, it.doctorAddress?.let { addr -&gt; jacksonObjectMapper().readValue(addr.toString(), Address::class.java) }),</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">                        Prescription(it.rxNumber, it.rxCreated, it.drugName, it.quantity?.toDouble(), it.fillNumber, it.refills, it.directions, it.daysSupply, it.amount.toDouble(), it.awp?.toDouble(), it.drugForm, it.diagnosisCode, it.ndc),</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">                        AdditionalInformation(it.keycode, it.caseId, it.pbmCompany, it.paNotPossibleReason, it.paNotPossibleNote, it.paNumber, it.paApprovalDate, it.extraInfoType, it.extraInfoNote, it.extraMedicalInfoType, it.extraMedicalInfoNote, it.paDeniedReferenceNumber, it.paDeniedDate, it.paDeniedReason, it.paDeniedNote, it.altMedicationDrug, it.altMedicationSig, it.altMedicationQuantity?.toDouble(), it.altMedicationRefills),</span>
+<span class="pc bpc" id="L69" title="1 of 6 branches missed.">                        it.status?.enumValue(), it.eventTimestamp?.toOffsetDateTime(), it.status?.enumValue&lt;Status&gt;()?.nextPossibleStatuses(),</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                        it.userId?.let { _ -&gt; UserBasicDetails(it.userId, it.fullName!!, it.userName!!) }, it.type.enumValue()!!)</span>
+<span class="fc" id="L71">                }.firstOrNull()</span>
+<span class="fc" id="L72">        }</span>
+
+    override fun unclaimAndUpdateTaskType(taskId: Int, type: TaskType) =
+<span class="pc" id="L75">        dataSource.connection.use {</span>
+<span class="fc" id="L76">            UnclaimAndUpdateTaskTypeCommand().command(it, UnclaimAndUpdateTaskTypeParams(type.toString(), taskId)).updatedRecordsCount</span>
+<span class="fc" id="L77">        }</span>
+
+    override fun getTaskGroupedByStatus(userName: String): Map&lt;Status, Int&gt; =
+<span class="pc" id="L80">        dataSource.connection.use {</span>
+<span class="fc" id="L81">            GetTaskCountByStatusQuery().query(it, GetTaskCountByStatusParams(userName))</span>
+<span class="fc bfc" id="L82" title="All 4 branches covered.">                .filterNot { it.status?.enumValue&lt;Status&gt;() == null }</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">                .map { it.status?.enumValue&lt;Status&gt;()!! to it.count!!.toInt() }.toMap()</span>
+<span class="fc" id="L84">        }</span>
+
+<span class="pc" id="L86">    override fun updateStatusAndAdditionalInformation(taskId: Int, status: Status?, additionalInformation: AdditionalInformation): Int = dataSource.connection.use {</span>
+<span class="fc" id="L87">        UpdateStatusAndAdditionalInformationCommand().command(it, UpdateStatusAndAdditionalInformationParams(</span>
+<span class="fc" id="L88">            additionalInformation.keycode, additionalInformation.caseId, additionalInformation.pbmCompanyName, additionalInformation.paNotPossibleReason, additionalInformation.paNotPossibleNote,</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">            additionalInformation.paNumber, additionalInformation.paApprovedDate?.let { Date(it.time) }, additionalInformation.extraInfoRequestedType, additionalInformation.extraInfoRequestedNote,</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            additionalInformation.paDeniedReferenceNumber, additionalInformation.paDeniedDate?.let { Date(it.time) }, additionalInformation.paDeniedReason, additionalInformation.paDeniedNote,</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            additionalInformation.altMedicationDrugName, additionalInformation.altMedicationSig, additionalInformation.altMedicationQuantity?.toBigDecimal(), additionalInformation.altMedicationRefills,</span>
+<span class="fc" id="L92">            additionalInformation.extraMedicalInfoRequestedType, additionalInformation.extraMedicalInfoRequestedNote,</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">            status?.name, taskId)).updatedRecordsCount</span>
+<span class="fc" id="L94">    }</span>
+
+    override fun getTasksOverview(status: String?, offset: Int, limit: Int): List&lt;TaskOverview&gt; =
+<span class="pc" id="L97">        dataSource.connection.use { GetTasksOverviewQuery().query(it, GetTasksOverviewParams(status, offset.toLong(), limit.toLong()))</span>
+<span class="fc bfc" id="L98" title="All 4 branches covered.">            .map { TaskOverview(it.fullName, it.role, it.drugName, it.rxNumber, it.status?.enumValue(), it.type.enumValue(), it.taskClaimedAt?.toOffsetDateTime()) }</span>
+<span class="fc" id="L99">        }</span>
+
+    override fun getStatusWiseTaskBreakdown(): Map&lt;Status, Int&gt; =
+<span class="pc" id="L102">        dataSource.connection.use {</span>
+<span class="fc" id="L103">            GetStatusWiseBreakdownForAllTasksQuery().query(it, GetStatusWiseBreakdownForAllTasksParams())</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">                .filterNot { it.status?.enumValue&lt;Status&gt;() == null }</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">                .map { it.status?.enumValue&lt;Status&gt;()!! to it.count!!.toInt() }.toMap()</span>
+<span class="fc" id="L106">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionAddedEvent.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.event.prescription</a> &gt; <span class="el_source">PrescriptionAddedEvent.kt</span></div><h1>PrescriptionAddedEvent.kt</h1><pre class="source lang-java linenums">package ibd.event.prescription
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import ibd.connector.db.prescription.Doctor
+import ibd.connector.db.prescription.PrescriptionDetails
+import java.util.*
+
+<span class="fc" id="L8">data class PrescriptionAddedEvent(</span>
+<span class="fc" id="L9">    val patient: Patient,</span>
+<span class="fc" id="L10">    val rxDetails: Prescription,</span>
+<span class="fc" id="L11">    val insurance: Insurance,</span>
+<span class="fc" id="L12">    val prescriber: Prescriber</span>
+)
+
+<span class="fc" id="L15">data class PrescriptionUpdatedEvent(</span>
+<span class="nc" id="L16">    @JsonIgnore val patient: Patient?,</span>
+<span class="fc" id="L17">    val rxDetails: Prescription,</span>
+<span class="fc" id="L18">    val insurance: Insurance,</span>
+<span class="nc" id="L19">    @JsonIgnore val prescriber: Prescriber?</span>
+)
+
+<span class="fc" id="L22">data class Patient(</span>
+<span class="fc" id="L23">    val mmsId: Int,</span>
+<span class="fc" id="L24">    val firstName: String,</span>
+<span class="fc" id="L25">    val lastName: String,</span>
+<span class="fc" id="L26">    val dob: Date,</span>
+<span class="fc" id="L27">    val gender: String,</span>
+<span class="fc" id="L28">    val email: String?,</span>
+<span class="fc" id="L29">    val mobile: String?,</span>
+<span class="fc" id="L30">    val telephone: String?,</span>
+<span class="fc" id="L31">    val address: Address</span>
+) {
+<span class="fc" id="L33">    fun toPatientEntity() = ibd.connector.db.prescription.Patient(mmsId, firstName, lastName, dob, gender, email, mobile, telephone, address.toAddressEntity())</span>
+}
+
+<span class="fc" id="L36">data class Address(val line1: String?, val line2: String?, val city: String?, val state: String?, val zipcode: String?) {</span>
+<span class="fc" id="L37">    fun toAddressEntity() = ibd.connector.db.prescription.Address(line1, line2, city, state, zipcode)</span>
+}
+
+<span class="fc" id="L40">data class Prescription(</span>
+<span class="fc" id="L41">    val rxNo: String,</span>
+<span class="fc" id="L42">    val fillNumber: Int,</span>
+<span class="fc" id="L43">    val refills: Int,</span>
+<span class="fc" id="L44">    val createdTimestamp: Date,</span>
+<span class="fc" id="L45">    val drugName: String,</span>
+<span class="fc" id="L46">    val ndc: String,</span>
+<span class="fc" id="L47">    val followUpTag: String?,</span>
+<span class="fc" id="L48">    val copay: Double,</span>
+<span class="fc" id="L49">    val amount: Double,</span>
+<span class="fc" id="L50">    val awp: Double?,</span>
+<span class="fc" id="L51">    val discount: Double?,</span>
+<span class="fc" id="L52">    val quantity: Double?,</span>
+<span class="fc" id="L53">    val direction: String?,</span>
+<span class="fc" id="L54">    val daySupply: String?,</span>
+<span class="fc" id="L55">    val drugForm: String?,</span>
+<span class="fc" id="L56">    val diagnosisCode: String?</span>
+) {
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">    fun toRxDetailsEntity() = PrescriptionDetails(rxNo, createdTimestamp, drugName, followUpTag, copay, amount, awp, ndc, quantity, fillNumber, refills, direction, daySupply?.trim()?.toInt(), discount, drugForm, diagnosisCode)</span>
+}
+
+<span class="fc" id="L61">data class Insurance(</span>
+<span class="fc" id="L62">    val id: String?,</span>
+<span class="fc" id="L63">    val name: String?,</span>
+<span class="fc" id="L64">    val bin: String?,</span>
+<span class="fc" id="L65">    val pcn: String?,</span>
+<span class="fc" id="L66">    val groupNo: String?,</span>
+<span class="fc" id="L67">    val type: String?</span>
+) {
+<span class="fc" id="L69">    fun toInsuranceEntity() = ibd.connector.db.prescription.Insurance(id, bin, pcn, groupNo, name, type)</span>
+}
+
+<span class="fc" id="L72">data class Prescriber(</span>
+<span class="fc" id="L73">    val mmsId: Int,</span>
+<span class="fc" id="L74">    val npi: String,</span>
+<span class="fc" id="L75">    val firstName: String,</span>
+<span class="fc" id="L76">    val lastName: String,</span>
+<span class="fc" id="L77">    val mobile: String?,</span>
+<span class="fc" id="L78">    val email: String?,</span>
+<span class="fc" id="L79">    val fax: String?,</span>
+<span class="nc" id="L80">    val address: Address</span>
+) {
+<span class="fc" id="L82">    fun toPrescriberEntity() = Doctor(mmsId, npi, firstName, lastName, mobile, email, fax, address.toAddressEntity())</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

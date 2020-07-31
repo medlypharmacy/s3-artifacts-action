@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetBasicTaskDetails.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">GetBasicTaskDetails.kt</span></div><h1>GetBasicTaskDetails.kt</h1><pre class="source lang-java linenums">package task
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Int
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="fc" id="L11">data class GetBasicTaskDetailsParams(</span>
+<span class="fc" id="L12">  val id: Int?</span>
+)
+
+<span class="fc" id="L15">class GetBasicTaskDetailsParamSetter : ParamSetter&lt;GetBasicTaskDetailsParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: GetBasicTaskDetailsParams) {
+<span class="fc" id="L17">    ps.setObject(1, params.id)</span>
+<span class="fc" id="L18">  }</span>
+}
+
+<span class="fc" id="L21">data class GetBasicTaskDetailsResult(</span>
+<span class="fc" id="L22">  val userName: String?,</span>
+<span class="fc" id="L23">  val type: String,</span>
+<span class="fc" id="L24">  val status: String?</span>
+)
+
+<span class="fc" id="L27">class GetBasicTaskDetailsRowMapper : RowMapper&lt;GetBasicTaskDetailsResult&gt; {</span>
+<span class="fc" id="L28">  override fun map(rs: ResultSet): GetBasicTaskDetailsResult = GetBasicTaskDetailsResult(</span>
+<span class="fc" id="L29">  userName = rs.getObject(&quot;user_name&quot;) as kotlin.String?,</span>
+<span class="fc" id="L30">    type = rs.getObject(&quot;type&quot;) as kotlin.String,</span>
+<span class="fc" id="L31">    status = rs.getObject(&quot;status&quot;) as kotlin.String?)</span>
+}
+
+<span class="fc" id="L34">class GetBasicTaskDetailsQuery : Query&lt;GetBasicTaskDetailsParams, GetBasicTaskDetailsResult&gt; {</span>
+<span class="fc" id="L35">  override val sql: String = &quot;SELECT p.user_name, p.type, p.status FROM pa_tasks p WHERE p.id=?;&quot;</span>
+
+<span class="fc" id="L37">  override val mapper: RowMapper&lt;GetBasicTaskDetailsResult&gt; = GetBasicTaskDetailsRowMapper()</span>
+
+<span class="fc" id="L39">  override val paramSetter: ParamSetter&lt;GetBasicTaskDetailsParams&gt; =</span>
+<span class="fc" id="L40">      GetBasicTaskDetailsParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskApi.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.api.tasks</a> &gt; <span class="el_source">TaskApi.kt</span></div><h1>TaskApi.kt</h1><pre class="source lang-java linenums">package ibd.api.tasks
+
+import ibd.api.tasks.models.*
+import ibd.api.users.models.MyTaskResponse
+import ibd.core.models.TaskOverview
+import ibd.core.statemachine.Status
+import ibd.core.tasks.TaskHistoryNode
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpResponse.ok
+import io.micronaut.http.annotation.*
+import io.micronaut.security.authentication.Authentication
+import javax.inject.Inject
+
+@Controller(value = &quot;/api&quot;)
+<span class="fc" id="L15">class TaskApi @Inject constructor(</span>
+		private val controller: TaskController
+) {
+
+	@Get(value = &quot;/tasks&quot;)
+	fun get(
+			@QueryValue page: Int?,
+			@QueryValue limit: Int?,
+			authentication: Authentication
+	): HttpResponse&lt;Array&lt;TaskResponse&gt;&gt; =
+<span class="fc" id="L25">			HttpResponse.ok(controller.get(page, limit, authentication))</span>
+
+	@Post(value = &quot;/tasks/{id}/claim&quot;)
+	fun claimTask(@PathVariable id: Int, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L29">		val response = controller.claimTask(id, authentication)</span>
+<span class="pc bpc" id="L30" title="3 of 4 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L31">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.message)</span>
+<span class="nc" id="L32">			ResponseType.NOT_FOUND -&gt; HttpResponse.notFound(response.message)</span>
+<span class="nc" id="L33">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L34">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Post(value = &quot;/tasks/{id}/unclaim&quot;)
+	fun unclaimTask(@PathVariable id: Int, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L40">		val response = controller.unclaimTask(id, authentication)</span>
+<span class="pc bpc" id="L41" title="3 of 4 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L42">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.message)</span>
+<span class="nc" id="L43">			ResponseType.NOT_FOUND -&gt; HttpResponse.notFound(response.message)</span>
+<span class="nc" id="L44">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L45">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Get(value = &quot;/tasks/{id}/details&quot;)
+	fun getTaskDetails(@PathVariable id: Int, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L51">		val response = controller.getTaskDetails(id, authentication)</span>
+<span class="pc bpc" id="L52" title="3 of 4 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L53">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.body)</span>
+<span class="nc" id="L54">			ResponseType.NOT_FOUND -&gt; HttpResponse.notFound(response.message)</span>
+<span class="nc" id="L55">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L56">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Post(value = &quot;/tasks/{id}&quot;)
+	fun updateStatusAndAdditionalInformation(@PathVariable id: Int, @Body body: TaskStatusUpdateRequest, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L62">		val response = controller.updateStatusAndAdditionalInformation(id, body, authentication)</span>
+<span class="pc bpc" id="L63" title="2 of 3 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L64">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.message)</span>
+<span class="nc" id="L65">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L66">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Get(value = &quot;/tasks/{id}/document/{fileName}/uploadUrl&quot;)
+	fun getUploadUrl(@PathVariable id: Int, @PathVariable fileName: String, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L72">		val response = controller.getUploadUrl(id, fileName, authentication)</span>
+<span class="pc bpc" id="L73" title="2 of 3 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L74">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.body)</span>
+<span class="nc" id="L75">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L76">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Post(value = &quot;/tasks/{id}/document/{fileName}&quot;)
+	fun markDocumentAsUploaded(@PathVariable id: Int, @PathVariable fileName: String, @QueryValue uploadName: String, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L82">		val response = controller.markDocumentAsUploaded(id, fileName, uploadName, authentication)</span>
+<span class="pc bpc" id="L83" title="2 of 3 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L84">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.message)</span>
+<span class="nc" id="L85">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L86">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Get(value = &quot;/tasks/{taskId}/document/{documentId}/downloadUrl&quot;)
+	@Produces(&quot;application/pdf&quot;)
+	fun getDownloadUrl(@PathVariable taskId: Int, @PathVariable documentId: Int): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L93">		val response = controller.getDownloadUrl(taskId, documentId)</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L95">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.body).headers(response.headers)</span>
+<span class="nc" id="L96">			else -&gt; HttpResponse.serverError(response.message)</span>
+		} as HttpResponse&lt;Any&gt;
+	}
+
+	@Delete(value = &quot;/tasks/{taskId}/document/{documentId}&quot;)
+	fun deleteDocument(@PathVariable taskId: Int, @PathVariable documentId: Int, authentication: Authentication): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L102">		val response = controller.deleteDocument(taskId, documentId, authentication)</span>
+<span class="pc bpc" id="L103" title="2 of 3 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L104">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.message).headers(response.headers)</span>
+<span class="nc" id="L105">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L106">			else -&gt; HttpResponse.serverError(response.message)</span>
+		} as HttpResponse&lt;Any&gt;
+	}
+
+	@Get(value = &quot;/tasks/{id}/history&quot;)
+	fun getTaskHistory(@PathVariable id: Int): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L112">		return HttpResponse.ok(controller.getTaskHistory(id))</span>
+	}
+
+	@Get(value = &quot;/tasks/task-overview&quot;)
+	fun getTasksOverview(
+		@QueryValue status: String?,
+		@QueryValue page: Int?,
+		@QueryValue limit: Int?,
+		authentication: Authentication
+	): HttpResponse&lt;Any&gt; {
+<span class="fc" id="L122">		val response = controller.getTasksOverview(status, page, limit, authentication)</span>
+<span class="pc bpc" id="L123" title="2 of 3 branches missed.">		return when (response.status) {</span>
+<span class="fc" id="L124">			ResponseType.SUCCESS -&gt; HttpResponse.ok(response.body)</span>
+<span class="nc" id="L125">			ResponseType.FORBIDDEN -&gt; HttpResponse.badRequest(response.message)</span>
+<span class="nc" id="L126">			else -&gt; HttpResponse.serverError(response.message)</span>
+		}
+	}
+
+	@Get(value = &quot;/tasks/breakdown&quot;)
+	fun getStatusWiseTaskBreakdown(authentication: Authentication): HttpResponse&lt;Map&lt;Status, Int&gt;&gt; =
+<span class="fc" id="L132">		ok(controller.getStatusWiseTaskBreakdown(authentication))</span>
+}
+
+interface TaskController {
+	fun get(page: Int?, limit: Int?, authentication: Authentication): Array&lt;TaskResponse&gt;
+
+	fun claimTask(id: Int, authentication: Authentication): Response&lt;Any&gt;
+
+	fun unclaimTask(id: Int, authentication: Authentication): Response&lt;Any&gt;
+
+	fun getTaskDetails(id: Int, authentication: Authentication): Response&lt;TaskDetailsResponse&gt;
+
+	fun updateStatusAndAdditionalInformation(id: Int, body: TaskStatusUpdateRequest, authentication: Authentication): Response&lt;Any&gt;
+
+	fun getUploadUrl(taskId: Int, fileName: String, authentication: Authentication): Response&lt;String&gt;
+
+	fun markDocumentAsUploaded(taskId: Int, fileName: String, uploadFileName: String, authentication: Authentication): Response&lt;String&gt;
+
+	fun getDownloadUrl(taskId: Int, documentId: Int): Response&lt;String&gt;
+
+	fun deleteDocument(taskId: Int, documentId: Int, authentication: Authentication): Response&lt;String&gt;
+
+	fun getTaskHistory(taskId: Int): Array&lt;TaskHistoryNodeResponse&gt;
+
+	fun getTasksOverview(status: String?, page: Int?, limit: Int?, authentication: Authentication): Response&lt;Array&lt;TaskOverviewResponse&gt;&gt;
+
+	fun getStatusWiseTaskBreakdown(authentication: Authentication): Map&lt;Status, Int&gt;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

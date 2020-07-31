@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Models.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.api.tasks.models</a> &gt; <span class="el_source">Models.kt</span></div><h1>Models.kt</h1><pre class="source lang-java linenums">package ibd.api.tasks.models
+
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude
+import ibd.core.models.TaskType
+import ibd.core.statemachine.Status
+import java.math.BigDecimal
+import java.util.*
+
+<span class="fc" id="L10">data class TaskResponse(</span>
+<span class="fc" id="L11">		val id: Int,</span>
+<span class="fc" id="L12">		val rxNumber: String,</span>
+<span class="fc" id="L13">		val patientFirstName: String,</span>
+<span class="fc" id="L14">		val patientLastName: String,</span>
+<span class="fc" id="L15">		val patientDob: String,</span>
+<span class="fc" id="L16">		val drugName: String,</span>
+<span class="fc" id="L17">		val fillNumber: Int,</span>
+<span class="fc" id="L18">		val refills: Int,</span>
+<span class="fc" id="L19">		val amount: BigDecimal,</span>
+<span class="fc" id="L20">		val doctorFirstName: String,</span>
+<span class="fc" id="L21">		val doctorLastName: String,</span>
+<span class="fc" id="L22">		val timestamp: String,</span>
+<span class="fc" id="L23">		val insuranceCode: String?,</span>
+<span class="fc" id="L24">		val type: String</span>
+)
+
+<span class="fc" id="L27">data class TaskDetailsResponse(</span>
+<span class="fc" id="L28">		val patient: Patient,</span>
+<span class="fc" id="L29">		val insurance: Insurance,</span>
+<span class="fc" id="L30">		val doctor: Doctor,</span>
+<span class="fc" id="L31">		val prescription: Prescription,</span>
+<span class="fc" id="L32">		val additionalInformation: AdditionalInformation,</span>
+<span class="fc" id="L33">		val status: Status?,</span>
+<span class="fc" id="L34">		@JsonInclude(JsonInclude.Include.ALWAYS) val documents: List&lt;Document&gt;,</span>
+<span class="fc" id="L35">		val daysInProgress: Long,</span>
+<span class="fc" id="L36">		val nextPossibleStatuses: List&lt;Status&gt;?,</span>
+<span class="fc" id="L37">		val claimedBy: User?,</span>
+<span class="fc" id="L38">		val hasClaimAccess: Boolean</span>
+)
+
+<span class="fc" id="L41">data class User(val userName: String, val fullName: String)</span>
+
+<span class="fc" id="L43">data class AdditionalInformation(</span>
+<span class="fc" id="L44">		val keycode: String?,</span>
+<span class="fc" id="L45">		val caseId: String?,</span>
+<span class="fc" id="L46">		val pbmCompanyName: String?,</span>
+<span class="fc" id="L47">		val paNotPossibleReason: String?,</span>
+<span class="fc" id="L48">		val paNotPossibleNote: String?,</span>
+<span class="fc" id="L49">		val paNumber: String?,</span>
+<span class="fc" id="L50">		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;MM/dd/yyyy&quot;) val paApprovedDate: Date?,</span>
+<span class="fc" id="L51">		val extraInfoRequestedType: String?,</span>
+<span class="fc" id="L52">		val extraInfoRequestedNote: String?,</span>
+<span class="fc" id="L53">		val extraMedicalInfoRequestedType: String?,</span>
+<span class="fc" id="L54">		val extraMedicalInfoRequestedNote: String?,</span>
+<span class="fc" id="L55">		val paDeniedReferenceNumber: String?,</span>
+<span class="fc" id="L56">		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;MM/dd/yyyy&quot;) val paDeniedDate: Date?,</span>
+<span class="fc" id="L57">		val paDeniedReason: String?,</span>
+<span class="fc" id="L58">		val paDeniedNote: String?,</span>
+<span class="fc" id="L59">		val altMedicationDrugName: String?,</span>
+<span class="fc" id="L60">		val altMedicationSig: String?,</span>
+<span class="fc" id="L61">		val altMedicationQuantity: Double?,</span>
+<span class="fc" id="L62">		val altMedicationRefills: Int?</span>
+)
+
+<span class="fc" id="L65">data class Patient(</span>
+<span class="fc" id="L66">		val firstName: String,</span>
+<span class="fc" id="L67">		val lastName: String,</span>
+<span class="fc" id="L68">		val dob: String?,</span>
+<span class="fc" id="L69">		val age: Int?,</span>
+<span class="fc" id="L70">		val gender: String,</span>
+<span class="fc" id="L71">		val email: String?,</span>
+<span class="fc" id="L72">		val mobile: String?,</span>
+<span class="fc" id="L73">		val telephone: String?,</span>
+<span class="fc" id="L74">		val address: Address?</span>
+)
+
+<span class="fc" id="L77">data class Address(val line1: String, val line2: String, val city: String, val state: String, val zipcode: String)</span>
+
+<span class="fc" id="L79">data class Insurance(</span>
+<span class="fc" id="L80">		val id: String?,</span>
+<span class="fc" id="L81">		val bin: String?,</span>
+<span class="fc" id="L82">		val pcn: String?,</span>
+<span class="fc" id="L83">		val groupNo: String?,</span>
+<span class="fc" id="L84">		val companyName: String?,</span>
+<span class="fc" id="L85">		val type: String?</span>
+)
+
+<span class="fc" id="L88">data class Doctor(</span>
+<span class="fc" id="L89">		val npi: String,</span>
+<span class="fc" id="L90">		val firstName: String,</span>
+<span class="fc" id="L91">		val lastName: String,</span>
+<span class="fc" id="L92">		val office: String?,</span>
+<span class="fc" id="L93">		val email: String?,</span>
+<span class="fc" id="L94">		val faxNo: String?,</span>
+<span class="fc" id="L95">		val address: Address?</span>
+)
+
+
+<span class="fc" id="L99">data class Prescription(</span>
+<span class="fc" id="L100">		val rxNo: String,</span>
+<span class="fc" id="L101">		val createdAt: String?,</span>
+<span class="fc" id="L102">		val drugName: String,</span>
+<span class="fc" id="L103">		val quantity: Double,</span>
+<span class="fc" id="L104">		val refillNumber: Int,</span>
+<span class="fc" id="L105">		val refills: Int,</span>
+<span class="fc" id="L106">		val direction: String?,</span>
+<span class="fc" id="L107">		val daySupply: Int?,</span>
+<span class="fc" id="L108">		val amount: Double,</span>
+<span class="fc" id="L109">		val awp: Double?,</span>
+<span class="fc" id="L110">		val drugForm: String?,</span>
+<span class="fc" id="L111">		val diagnosisCode: String?,</span>
+<span class="fc" id="L112">		val ndc: String</span>
+)
+
+<span class="fc" id="L115">data class TaskStatusUpdateRequest(</span>
+<span class="fc" id="L116">		val status: Status?,</span>
+<span class="fc" id="L117">		val additionalInformation: AdditionalInformation</span>
+)
+
+<span class="fc" id="L120">data class Document(</span>
+<span class="fc" id="L121">		val id: Int, val name: String, val uploadedBy: String, val status: Status, val uploadedAt: String, val canDelete: Boolean</span>
+)
+
+<span class="fc" id="L124">data class TaskOverviewResponse(</span>
+<span class="fc" id="L125">	val associateName: String?,</span>
+<span class="fc" id="L126">	val associateRole: String?,</span>
+<span class="fc" id="L127">	val drugName: String,</span>
+<span class="fc" id="L128">	val rxNo: String,</span>
+<span class="fc" id="L129">	val status: String?,</span>
+<span class="fc" id="L130">	val taskType: String?,</span>
+<span class="fc" id="L131">	val daysInProgress: Int</span>
+)
+
+<span class="fc" id="L134">data class TaskHistoryNodeResponse(</span>
+<span class="fc" id="L135">	val additionalInformation: AdditionalInformation?,</span>
+<span class="fc" id="L136">	val status: Status?,</span>
+<span class="fc" id="L137">	val userName: String?,</span>
+<span class="fc" id="L138">	val type: TaskType?,</span>
+<span class="fc" id="L139">	val eventTimestamp: String,</span>
+<span class="fc" id="L140">	val documents: List&lt;Document&gt;</span>
+)
+
+<span class="fc" id="L143">data class Response&lt;T&gt;(</span>
+<span class="fc" id="L144">		val status: ResponseType,</span>
+<span class="fc" id="L145">		val message: String?,</span>
+<span class="fc" id="L146">		val body: T?,</span>
+<span class="fc" id="L147">		val headers: Map&lt;CharSequence, CharSequence&gt; = emptyMap()</span>
+)
+
+enum class ResponseType {
+	SUCCESS, BAD_REQUEST, NOT_FOUND, FORBIDDEN;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

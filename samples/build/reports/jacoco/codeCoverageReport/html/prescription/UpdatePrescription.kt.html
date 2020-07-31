@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdatePrescription.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">prescription</a> &gt; <span class="el_source">UpdatePrescription.kt</span></div><h1>UpdatePrescription.kt</h1><pre class="source lang-java linenums">package prescription
+
+import java.math.BigDecimal
+import java.sql.PreparedStatement
+import kotlin.Int
+import kotlin.String
+import norm.Command
+import norm.ParamSetter
+
+<span class="fc" id="L10">data class UpdatePrescriptionParams(</span>
+<span class="fc" id="L11">  val drugName: String?,</span>
+<span class="fc" id="L12">  val ndc: String?,</span>
+<span class="fc" id="L13">  val directions: String?,</span>
+<span class="fc" id="L14">  val daysSupply: Int?,</span>
+<span class="fc" id="L15">  val drugForm: String?,</span>
+<span class="fc" id="L16">  val diagnosisCode: String?,</span>
+<span class="fc" id="L17">  val refills: Int?,</span>
+<span class="fc" id="L18">  val quantity: BigDecimal?,</span>
+<span class="fc" id="L19">  val amount: BigDecimal?,</span>
+<span class="fc" id="L20">  val awp: BigDecimal?,</span>
+<span class="fc" id="L21">  val copay: BigDecimal?,</span>
+<span class="fc" id="L22">  val discount: BigDecimal?,</span>
+<span class="fc" id="L23">  val insuranceId: String?,</span>
+<span class="fc" id="L24">  val bin: String?,</span>
+<span class="fc" id="L25">  val pcn: String?,</span>
+<span class="fc" id="L26">  val groupNumber: String?,</span>
+<span class="fc" id="L27">  val insuranceName: String?,</span>
+<span class="fc" id="L28">  val insuranceType: String?,</span>
+<span class="fc" id="L29">  val rxNumber: String?,</span>
+<span class="fc" id="L30">  val fillNumber: Int?</span>
+)
+
+<span class="fc" id="L33">class UpdatePrescriptionParamSetter : ParamSetter&lt;UpdatePrescriptionParams&gt; {</span>
+  override fun map(ps: PreparedStatement, params: UpdatePrescriptionParams) {
+<span class="fc" id="L35">    ps.setObject(1, params.drugName)</span>
+<span class="fc" id="L36">    ps.setObject(2, params.ndc)</span>
+<span class="fc" id="L37">    ps.setObject(3, params.directions)</span>
+<span class="fc" id="L38">    ps.setObject(4, params.daysSupply)</span>
+<span class="fc" id="L39">    ps.setObject(5, params.drugForm)</span>
+<span class="fc" id="L40">    ps.setObject(6, params.diagnosisCode)</span>
+<span class="fc" id="L41">    ps.setObject(7, params.refills)</span>
+<span class="fc" id="L42">    ps.setObject(8, params.quantity)</span>
+<span class="fc" id="L43">    ps.setObject(9, params.amount)</span>
+<span class="fc" id="L44">    ps.setObject(10, params.awp)</span>
+<span class="fc" id="L45">    ps.setObject(11, params.copay)</span>
+<span class="fc" id="L46">    ps.setObject(12, params.discount)</span>
+<span class="fc" id="L47">    ps.setObject(13, params.insuranceId)</span>
+<span class="fc" id="L48">    ps.setObject(14, params.bin)</span>
+<span class="fc" id="L49">    ps.setObject(15, params.pcn)</span>
+<span class="fc" id="L50">    ps.setObject(16, params.groupNumber)</span>
+<span class="fc" id="L51">    ps.setObject(17, params.insuranceName)</span>
+<span class="fc" id="L52">    ps.setObject(18, params.insuranceType)</span>
+<span class="fc" id="L53">    ps.setObject(19, params.rxNumber)</span>
+<span class="fc" id="L54">    ps.setObject(20, params.fillNumber)</span>
+<span class="fc" id="L55">  }</span>
+}
+
+<span class="fc" id="L58">class UpdatePrescriptionCommand : Command&lt;UpdatePrescriptionParams&gt; {</span>
+<span class="fc" id="L59">  override val sql: String = &quot;&quot;&quot;</span>
+      |update prescriptions set drug_name=?, ndc=?, directions=?, days_supply=?, drug_form=?, diagnosis_code=?, refills=?, quantity=?, amount=?, awp=?, copay=?, discount=?, insurance_id=?, bin=?, pcn=?, group_number=?, insurance_name=?, insurance_type=?
+      |where rx_number = ? and fill_number = ?
+<span class="fc" id="L62">      |&quot;&quot;&quot;.trimMargin()</span>
+
+<span class="fc" id="L64">  override val paramSetter: ParamSetter&lt;UpdatePrescriptionParams&gt; = UpdatePrescriptionParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

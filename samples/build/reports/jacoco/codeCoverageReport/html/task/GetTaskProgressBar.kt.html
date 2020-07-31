@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetTaskProgressBar.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">task</a> &gt; <span class="el_source">GetTaskProgressBar.kt</span></div><h1>GetTaskProgressBar.kt</h1><pre class="source lang-java linenums">package task
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Timestamp
+import kotlin.String
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+<span class="nc" id="L11">class GetTaskProgressBarParams</span>
+
+<span class="nc" id="L13">class GetTaskProgressBarParamSetter : ParamSetter&lt;GetTaskProgressBarParams&gt; {</span>
+    override fun map(ps: PreparedStatement, params: GetTaskProgressBarParams) {
+<span class="nc" id="L15">    }</span>
+}
+
+<span class="nc" id="L18">data class GetTaskProgressBarResult(</span>
+<span class="nc" id="L19">    val keycode: String?,</span>
+<span class="nc" id="L20">    val caseId: String?,</span>
+<span class="nc" id="L21">    val pbmCompany: String?,</span>
+<span class="nc" id="L22">    val paNotPossibleReason: String?,</span>
+<span class="nc" id="L23">    val paNotPossibleNote: String?,</span>
+<span class="nc" id="L24">    val paNumber: String?,</span>
+<span class="nc" id="L25">    val paApprovalDate: String?,</span>
+<span class="nc" id="L26">    val extraInfoType: String?,</span>
+<span class="nc" id="L27">    val extraInfoNote: String?,</span>
+<span class="nc" id="L28">    val paDeniedReferenceNumber: String?,</span>
+<span class="nc" id="L29">    val paDeniedDate: String?,</span>
+<span class="nc" id="L30">    val paDeniedReason: String?,</span>
+<span class="nc" id="L31">    val paDeniedNote: String?,</span>
+<span class="nc" id="L32">    val altMedicationDrug: String?,</span>
+<span class="nc" id="L33">    val altMedicationSig: String?,</span>
+<span class="nc" id="L34">    val altMedicationQuantity: String?,</span>
+<span class="nc" id="L35">    val altMedicationRefills: String?,</span>
+<span class="nc" id="L36">    val extraMedicalInfoType: String?,</span>
+<span class="nc" id="L37">    val extraMedicalInfoNote: String?,</span>
+<span class="nc" id="L38">    val status: String?,</span>
+<span class="nc" id="L39">    val userName: String?,</span>
+<span class="nc" id="L40">    val type: String?,</span>
+<span class="nc" id="L41">    val eventTimestamp: Timestamp?</span>
+)
+
+<span class="nc" id="L44">class GetTaskProgressBarRowMapper : RowMapper&lt;GetTaskProgressBarResult&gt; {</span>
+<span class="nc" id="L45">    override fun map(rs: ResultSet): GetTaskProgressBarResult = GetTaskProgressBarResult(</span>
+<span class="nc" id="L46">        keycode = rs.getObject(&quot;keycode&quot;) as kotlin.String?,</span>
+<span class="nc" id="L47">        caseId = rs.getObject(&quot;case_id&quot;) as kotlin.String?,</span>
+<span class="nc" id="L48">        pbmCompany = rs.getObject(&quot;pbm_company&quot;) as kotlin.String?,</span>
+<span class="nc" id="L49">        paNotPossibleReason = rs.getObject(&quot;pa_not_possible_reason&quot;) as kotlin.String?,</span>
+<span class="nc" id="L50">        paNotPossibleNote = rs.getObject(&quot;pa_not_possible_note&quot;) as kotlin.String?,</span>
+<span class="nc" id="L51">        paNumber = rs.getObject(&quot;pa_number&quot;) as kotlin.String?,</span>
+<span class="nc" id="L52">        paApprovalDate = rs.getObject(&quot;pa_approval_date&quot;) as kotlin.String?,</span>
+<span class="nc" id="L53">        extraInfoType = rs.getObject(&quot;extra_info_type&quot;) as kotlin.String?,</span>
+<span class="nc" id="L54">        extraInfoNote = rs.getObject(&quot;extra_info_note&quot;) as kotlin.String?,</span>
+<span class="nc" id="L55">        paDeniedReferenceNumber = rs.getObject(&quot;pa_denied_reference_number&quot;) as kotlin.String?,</span>
+<span class="nc" id="L56">        paDeniedDate = rs.getObject(&quot;pa_denied_date&quot;) as kotlin.String?,</span>
+<span class="nc" id="L57">        paDeniedReason = rs.getObject(&quot;pa_denied_reason&quot;) as kotlin.String?,</span>
+<span class="nc" id="L58">        paDeniedNote = rs.getObject(&quot;pa_denied_note&quot;) as kotlin.String?,</span>
+<span class="nc" id="L59">        altMedicationDrug = rs.getObject(&quot;alt_medication_drug&quot;) as kotlin.String?,</span>
+<span class="nc" id="L60">        altMedicationSig = rs.getObject(&quot;alt_medication_sig&quot;) as kotlin.String?,</span>
+<span class="nc" id="L61">        altMedicationQuantity = rs.getObject(&quot;alt_medication_quantity&quot;) as kotlin.String?,</span>
+<span class="nc" id="L62">        altMedicationRefills = rs.getObject(&quot;alt_medication_refills&quot;) as kotlin.String?,</span>
+<span class="nc" id="L63">        extraMedicalInfoType = rs.getObject(&quot;extra_medical_info_type&quot;) as kotlin.String?,</span>
+<span class="nc" id="L64">        extraMedicalInfoNote = rs.getObject(&quot;extra_medical_info_note&quot;) as kotlin.String?,</span>
+<span class="nc" id="L65">        status = rs.getObject(&quot;status&quot;) as kotlin.String?,</span>
+<span class="nc" id="L66">        userName = rs.getObject(&quot;user_name&quot;) as kotlin.String?,</span>
+<span class="nc" id="L67">        type = rs.getObject(&quot;type&quot;) as kotlin.String?,</span>
+<span class="nc" id="L68">        eventTimestamp = rs.getObject(&quot;event_timestamp&quot;) as java.sql.Timestamp?)</span>
+}
+
+<span class="nc" id="L71">class GetTaskProgressBarQuery : Query&lt;GetTaskProgressBarParams, GetTaskProgressBarResult&gt; {</span>
+<span class="nc" id="L72">    override val sql: String = &quot;&quot;&quot;</span>
+      |SELECT
+      |	additional_information-&gt;'keycode' AS keycode,
+      |	additional_information-&gt;'case_id' AS case_id,
+      |	additional_information-&gt;'pbm_company' AS pbm_company,
+      |	additional_information-&gt;'pa_not_possible_reason' AS pa_not_possible_reason,
+      |	additional_information-&gt;'pa_not_possible_note' AS pa_not_possible_note,
+      |	additional_information-&gt;'pa_number' AS pa_number,
+      |	additional_information-&gt;'pa_approval_date' AS pa_approval_date,
+      |	additional_information-&gt;'extra_info_type' AS extra_info_type,
+      |	additional_information-&gt;'extra_info_note' AS extra_info_note,
+      |	additional_information-&gt;'pa_denied_reference_number' AS pa_denied_reference_number,
+      |	additional_information-&gt;'pa_denied_date' AS pa_denied_date,
+      |	additional_information-&gt;'pa_denied_reason' AS pa_denied_reason,
+      |	additional_information-&gt;'pa_denied_note' AS pa_denied_note,
+      |	additional_information-&gt;'alt_medication_drug' AS alt_medication_drug,
+      |	additional_information-&gt;'alt_medication_sig' AS alt_medication_sig,
+      |	additional_information-&gt;'alt_medication_quantity' AS alt_medication_quantity,
+      |	additional_information-&gt;'alt_medication_refills' AS alt_medication_refills,
+      |	additional_information-&gt;'extra_medical_info_type' AS extra_medical_info_type,
+      |	additional_information-&gt;'extra_medical_info_note' AS extra_medical_info_note,
+      |	status, user_name, type, event_timestamp from task_progress_bar;
+<span class="nc" id="L94">      &quot;&quot;&quot;.trimMargin()</span>
+
+<span class="nc" id="L96">    override val mapper: RowMapper&lt;GetTaskProgressBarResult&gt; = GetTaskProgressBarRowMapper()</span>
+
+<span class="nc" id="L98">    override val paramSetter: ParamSetter&lt;GetTaskProgressBarParams&gt; = GetTaskProgressBarParamSetter()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

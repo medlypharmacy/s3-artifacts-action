@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionEntity.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.connector.db.prescription</a> &gt; <span class="el_source">PrescriptionEntity.kt</span></div><h1>PrescriptionEntity.kt</h1><pre class="source lang-java linenums">package ibd.connector.db.prescription
+
+import java.util.*
+
+<span class="fc" id="L5">data class PrescriptionEntity(</span>
+<span class="nc" id="L6">    val id: Long?,</span>
+<span class="fc" id="L7">    val patient: Patient,</span>
+<span class="fc" id="L8">    val doctor: Doctor,</span>
+<span class="fc" id="L9">    val prescriptionDetails: PrescriptionDetails,</span>
+<span class="fc" id="L10">    val insurance: Insurance</span>
+)
+
+<span class="fc" id="L13">data class Patient(</span>
+<span class="fc" id="L14">    val mmsUserId: Int,</span>
+<span class="fc" id="L15">    val firstName: String,</span>
+<span class="fc" id="L16">    val lastName: String,</span>
+<span class="fc" id="L17">    val dob: Date,</span>
+<span class="fc" id="L18">    val gender: String,</span>
+<span class="fc" id="L19">    val email: String?,</span>
+<span class="fc" id="L20">    val mobile: String?,</span>
+<span class="fc" id="L21">    val telephone: String?,</span>
+<span class="fc" id="L22">    val address: Address</span>
+)
+
+<span class="fc" id="L25">data class Address(val line1: String?, val line2: String?, val city: String?, val state: String?, val zipcode: String?)</span>
+
+<span class="fc" id="L27">data class PrescriptionDetails(</span>
+<span class="fc" id="L28">    val rxNo: String,</span>
+<span class="fc" id="L29">    val createdTimestamp: Date,</span>
+<span class="fc" id="L30">    val drugName: String,</span>
+<span class="nc" id="L31">    val followUpTag: String?,</span>
+<span class="fc" id="L32">    val copay: Double,</span>
+<span class="fc" id="L33">    val amount: Double,</span>
+<span class="fc" id="L34">    val awp: Double?,</span>
+<span class="fc" id="L35">    val ndc: String,</span>
+<span class="fc" id="L36">    val quantity: Double?,</span>
+<span class="fc" id="L37">    val refillNumber: Int,</span>
+<span class="fc" id="L38">    val refills: Int,</span>
+<span class="fc" id="L39">    val direction: String?,</span>
+<span class="fc" id="L40">    val daySupply: Int?,</span>
+<span class="fc" id="L41">    val discount: Double?,</span>
+<span class="fc" id="L42">    val drugForm: String?,</span>
+<span class="fc" id="L43">    val diagnosisCode: String?</span>
+)
+
+<span class="fc" id="L46">data class Insurance(</span>
+<span class="fc" id="L47">    val id: String?,</span>
+<span class="fc" id="L48">    val bin: String?,</span>
+<span class="fc" id="L49">    val pcn: String?,</span>
+<span class="fc" id="L50">    val groupNo: String?,</span>
+<span class="fc" id="L51">    val companyName: String?,</span>
+<span class="fc" id="L52">    val type: String?</span>
+)
+
+<span class="fc" id="L55">data class Doctor(</span>
+<span class="fc" id="L56">    val mmsId: Int,</span>
+<span class="fc" id="L57">    val npi: String,</span>
+<span class="fc" id="L58">    val firstName: String,</span>
+<span class="fc" id="L59">    val lastName: String,</span>
+<span class="fc" id="L60">    val mobile: String?,</span>
+<span class="fc" id="L61">    val email: String?,</span>
+<span class="fc" id="L62">    val faxNo: String?,</span>
+<span class="fc" id="L63">    val address: Address</span>
+)
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

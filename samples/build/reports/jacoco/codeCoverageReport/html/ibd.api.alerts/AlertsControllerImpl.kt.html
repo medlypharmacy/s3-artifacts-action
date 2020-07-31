@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AlertsControllerImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ibd-service</a> &gt; <a href="index.source.html" class="el_package">ibd.api.alerts</a> &gt; <span class="el_source">AlertsControllerImpl.kt</span></div><h1>AlertsControllerImpl.kt</h1><pre class="source lang-java linenums">package ibd.api.alerts
+
+import ibd.api.security.userName
+import ibd.api.tasks.models.Response
+import ibd.api.tasks.models.ResponseType
+import ibd.core.alerts.AlertService
+import ibd.core.exceptions.AccessDeniedException
+import ibd.core.models.Alert
+import io.micronaut.security.authentication.Authentication
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+<span class="fc" id="L14">class AlertsControllerImpl(</span>
+    @Inject private val alertsService: AlertService
+) : AlertsController {
+    override fun getAlerts(resolveStatus: String?, page: Int?, limit: Int?, authentication: Authentication): Response&lt;Array&lt;Alert&gt;&gt; =
+<span class="fc" id="L18">        try {</span>
+<span class="fc bfc" id="L19" title="All 4 branches covered.">            val result = alertsService.getAlerts(resolveStatus, page ?: 0, limit ?: 10, authentication.userName()).toTypedArray()</span>
+<span class="fc" id="L20">            Response(ResponseType.SUCCESS, null, result)</span>
+<span class="fc" id="L21">        } catch (e: AccessDeniedException) {</span>
+<span class="fc" id="L22">            Response(ResponseType.FORBIDDEN, e.message, null)</span>
+<span class="fc" id="L23">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
