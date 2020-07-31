@@ -57,6 +57,7 @@ https://<repo_name>.medly.dev/swagger-docs/<swagger_spec_file_name_without_exten
 
 For example, for this repo swagger docs are available at:
 https://s3-artifacts-action.medly.dev/swagger-docs/dummy_swagger/index.html
+
 https://s3-artifacts-action.medly.dev/swagger-docs/dummy_swagger1/index.html
 
 ```yaml
