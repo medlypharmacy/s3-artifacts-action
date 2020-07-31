@@ -51,6 +51,14 @@ publish-s3-artifact-folder:
 ```
 
 ## To generate SWAGGER to html
+
+You can generate html docs for corresponding swagger specification files (.yml files). The source_path should be directory containing the swagger specification files. Providing destination_path for resource_type: "SWAGGER_TO_HTML" is not supported at this moment. The swagger docs would be available at:
+https://<repo_name>.medly.dev/swagger-docs/<swagger_spec_file_name_without_extension>/index.html
+
+For example, for this repo swagger docs are available at:
+https://s3-artifacts-action.medly.dev/swagger-docs/dummy_swagger/index.html
+https://s3-artifacts-action.medly.dev/swagger-docs/dummy_swagger1/index.html
+
 ```yaml
 publish-s3-artifact-folder:
     runs-on: ubuntu-latest
@@ -62,6 +70,6 @@ publish-s3-artifact-folder:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
-          source_path: './dummy_swagger.yml'
-          resource_type: "SWAGGER"
+          source_path: './api/spec'
+          resource_type: "SWAGGER_TO_HTML"
 ```

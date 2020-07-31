@@ -34,14 +34,23 @@ else
   DESTINATION_PATH=$(echo $INPUT_DESTINATION_PATH | sed 's/\.*\/*//')
 fi
 
-if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER' ]]; then
-  INPUT_FILE=$(basename -- "$INPUT_SOURCE_PATH")
-  java -jar /swagger-codegen-cli.jar generate -i $INPUT_SOURCE_PATH -l html2 -o "/tmp/swagger-docs/${INPUT_FILE%.*}"
+if [[  $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
+  if [[ -f "$INPUT_SOURCE_PATH" ]]; then
+    echo "Source path must be a directory for the resource type  "
+    exit 1
+  fi 
+  for SWAGGER_SPECIFICATION_FILE_PATH in "$INPUT_SOURCE_PATH/*.yml"
+  do
+    SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE_PATH)"
+    java -jar /swagger-codegen-cli.jar generate \
+         -i $SWAGGER_SPECIFICATION_FILE \
+         -l html2 -o "/tmp/swagger-docs/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
+  done
   INPUT_SOURCE_PATH=/tmp/swagger-docs
   DESTINATION_PATH=swagger-docs
 fi
 
-[[ $INPUT_RESOURCE_TYPE == 'DIRECTORY' || $INPUT_RESOURCE_TYPE == 'SWAGGER' ]] && ARGS=" --recursive" || ARGS=""
+[[ $INPUT_RESOURCE_TYPE == 'DIRECTORY' || $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]] && ARGS=" --recursive" || ARGS=""
 
 sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
