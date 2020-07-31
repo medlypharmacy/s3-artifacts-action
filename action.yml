@@ -23,5 +23,5 @@ inputs:
     description: 'Relative path where the file needs to be updated on S3'
     required: false
   resource_type:  
-    description: 'FILE | DIRECTORY | SWAGGER. Default is FILE'
+    description: 'FILE | DIRECTORY | SWAGGER_TO_HTML. Default is FILE'
     required: false
