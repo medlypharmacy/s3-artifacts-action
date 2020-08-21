@@ -51,7 +51,7 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
          -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
   done
   INPUT_SOURCE_PATH=/tmp
-  DESTINATION_PATH=swagger-docs
+  [[ -z "$INPUT_DESTINATION_PATH" ]] && DESTINATION_PATH=api-spec || DESTINATION_PATH=$INPUT_SOURCE_PATH
 fi
 
 if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
@@ -59,7 +59,7 @@ if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
     echo "Source path must be a directory for the resource type TEST_COVERAGE"
     exit 1
   fi 
-  DESTINATION_PATH=test-coverage
+  [[ -z "$INPUT_DESTINATION_PATH" ]] && DESTINATION_PATH=test-coverage || DESTINATION_PATH=$INPUT_SOURCE_PATH
 fi
 
 [[ $INPUT_RESOURCE_TYPE == 'FILE' ]] && ARGS="" || ARGS="--recursive"
