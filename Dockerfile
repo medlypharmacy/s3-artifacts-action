@@ -4,8 +4,9 @@ ENV AWSCLI_VERSION='1.18.93'
 
 RUN pip install --quiet --no-cache-dir awscli==${AWSCLI_VERSION}
 RUN apk add openjdk11
-RUN wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.20/swagger-codegen-cli-3.0.20.jar -O swagger-codegen-cli.jar
-
-ENTRYPOINT ["/entrypoint.sh"]
+RUN apk add nodejs nodejs-npm
+RUN npm install -g redoc-cli@0.9.10
 
 COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
