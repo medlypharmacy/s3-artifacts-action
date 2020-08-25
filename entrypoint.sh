@@ -39,16 +39,15 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type SWAGGER_TO_HTML"
     exit 1
-  fi 
+  fi
   SWAGGER_SPECIFICATION_FILES=$(ls $INPUT_SOURCE_PATH/*.yml)
   for SWAGGER_SPECIFICATION_FILE in $SWAGGER_SPECIFICATION_FILES
   do
     echo "Generating html docs for: $SWAGGER_SPECIFICATION_FILE"
     SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE)"
-    java -jar /swagger-codegen-cli.jar generate \
-         -i $SWAGGER_SPECIFICATION_FILE \
-         -l html2 \
-         -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"  
+    redoc-cli bundle \
+          $SWAGGER_SPECIFICATION_FILE \
+          -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"
   done
   INPUT_SOURCE_PATH=/tmp
   DESTINATION_PATH=swagger-docs
@@ -58,7 +57,7 @@ if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type TEST_COVERAGE"
     exit 1
-  fi 
+  fi
   DESTINATION_PATH=test-coverage
 fi
 
@@ -67,7 +66,7 @@ fi
 sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
         --no-progress \
-        --metadata $METADATA $ARGS" 
+        --metadata $METADATA $ARGS"
 
 aws configure --profile upload-artifacts-profile <<-EOF > /dev/null 2>&1
 null
