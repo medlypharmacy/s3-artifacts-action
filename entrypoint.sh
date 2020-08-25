@@ -47,7 +47,7 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
     SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE)"
     redoc-cli bundle \
           $SWAGGER_SPECIFICATION_FILE \
-          -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}"
+          -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}.html"
   done
   INPUT_SOURCE_PATH=/tmp
   DESTINATION_PATH=swagger-docs
