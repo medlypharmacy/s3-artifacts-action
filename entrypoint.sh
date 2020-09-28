@@ -83,8 +83,11 @@ if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type TEST_COVERAGE"
     exit 1
-  fi
-  DESTINATION_PATH=test-coverage
+  if [[ -z "$DESTINATION_PATH" ]]; then
+    DESTINATION_PATH=test-coverage
+  else
+    DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
+  fi  
 fi
 
 [[ $INPUT_RESOURCE_TYPE == 'FILE' ]] && ARGS="" || ARGS="--recursive"
