@@ -49,16 +49,46 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
           $SWAGGER_SPECIFICATION_FILE \
           -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}/index.html"
   done
+  if [[ -z "$DESTINATION_PATH" ]]; then
+    DESTINATION_PATH=swagger-docs
+  else
+    DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
+  fi
   INPUT_SOURCE_PATH=/tmp
-  DESTINATION_PATH=swagger-docs
 fi
+
+if [[ $INPUT_RESOURCE_TYPE == 'ASYNCAPI_TO_HTML' ]]; then
+  if [[ -f "$INPUT_SOURCE_PATH" ]]; then
+    echo "Source path must be a directory for the resource type ASYNCAPI_TO_HTML"
+    exit 1
+  fi
+  ASYNCAPI_SPECIFICATION_FILES=$(ls $INPUT_SOURCE_PATH/*.yml)
+  for ASYNCAPI_SPECIFICATION_FILE in $SWAGGER_SPECIFICATION_FILES
+  do
+    echo "Generating html docs for: $ASYNCAPI_SPECIFICATION_FILE"
+    ASYNCAPI_SPECIFICATION_FILE_NAME="$(basename -- $ASYNCAPI_SPECIFICATION_FILE)"
+    ag $ASYNCAPI_SPECIFICATION_FILE_NAME \
+          @asyncapi/html-template@0.7.0 \
+          -o "/tmp/${ASYNCAPI_SPECIFICATION_FILE_NAME%.*}"
+  done
+  if [[ -z "$DESTINATION_PATH" ]]; then
+    DESTINATION_PATH=asyncapi-docs
+  else
+    DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
+  fi
+  INPUT_SOURCE_PATH=/tmp
+fi 
 
 if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type TEST_COVERAGE"
     exit 1
   fi
-  DESTINATION_PATH=test-coverage
+  if [[ -z "$DESTINATION_PATH" ]]; then
+    DESTINATION_PATH=test-coverage
+  else
+    DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
+  fi  
 fi
 
 [[ $INPUT_RESOURCE_TYPE == 'FILE' ]] && ARGS="" || ARGS="--recursive"
