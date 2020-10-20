@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -24,8 +24,7 @@ ${INPUT_AWS_REGION}
 text
 EOF
 
-REF_ARR=($(echo $GITHUB_REF | sed -e "s/\// /g"))
-BRANCH_NAME=$(echo "${REF_ARR[@]:2}" | tr ' ' -)
+BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
 REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
 METADATA="{\\\"initiator\\\":\\\"$GITHUB_ACTOR\\\",\\\"commit_sha\\\":\\\"$GITHUB_SHA\\\"}"
 
