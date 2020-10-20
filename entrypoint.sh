@@ -24,7 +24,7 @@ ${INPUT_AWS_REGION}
 text
 EOF
 
-BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
+BRANCH_NAME=$(echo $GITHUB_REF | cut -d '/' -f 3- | tr / -)
 REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f 2)
 METADATA="{\\\"initiator\\\":\\\"$GITHUB_ACTOR\\\",\\\"commit_sha\\\":\\\"$GITHUB_SHA\\\"}"
 
