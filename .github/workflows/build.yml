@@ -8,57 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Upload to S3 as artifact
-        uses: medlypharmacy/s3-artifacts-action@master
+        uses: medlypharmacy/s3-artifacts-action@javascript
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           source_path: './samples/dummy91.zip'
-  publish-s3-artifact-folder:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
-        uses: medlypharmacy/s3-artifacts-action@master
-        with:
-          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './samples/dummyfolder'
-          destination_path: "/dummyartifacts"
-          resource_type: "DIRECTORY"
-  publish-swagger-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
-        uses: medlypharmacy/s3-artifacts-action@master
-        with:
-          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './samples/api/spec'
-          aws_s3_bucket_name: 'medly-dev-test-cases'
-          resource_type: "SWAGGER_TO_HTML"
-  publish-test-coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
-        uses: medlypharmacy/s3-artifacts-action@master
-        with:
-          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './samples/build/reports/jacoco/codeCoverageReport/html'
-          aws_s3_bucket_name: 'medly-dev-test-cases'
-          resource_type: "TEST_COVERAGE"
-  publish-test-coverage-with-destination-path:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
-        uses: medlypharmacy/s3-artifacts-action@master
-        with:
-          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
-          source_path: './samples/build/reports/jacoco/codeCoverageReport/html'
-          destination_path: ${{ secrets.TEST_COVERAGE }}
-          aws_s3_bucket_name: 'medly-dev-test-cases'
-          resource_type: "TEST_COVERAGE"

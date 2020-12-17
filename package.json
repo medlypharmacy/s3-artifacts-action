@@ -1,0 +1,27 @@
+{
+  "name": "s3-artifacts-action",
+  "version": "1.0.0",
+  "description": "The purpose of this action is to upload the zipped artifact from github actions and upload it to S3, segregated by repository and branch.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medlypharmacy/s3-artifacts-action.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/medlypharmacy/s3-artifacts-action/issues"
+  },
+  "homepage": "https://github.com/medlypharmacy/s3-artifacts-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "s3": "^4.4.0"
+  }
+}
