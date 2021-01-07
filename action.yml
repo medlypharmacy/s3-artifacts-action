@@ -2,7 +2,7 @@ name: "Artifacts"
 description: "Uploads artifacts segregated by app and branch"
 runs:
   using: docker
-  image: docker://docker.pkg.github.com/medlypharmacy/s3-artifacts-action/runner:publish-docker-image
+  image: docker://nirajftw/s3-artifacts-action-runner:publish-docker-image
 inputs:
   aws_access_key_id:  
     description: 'AWS Access Key Id'
