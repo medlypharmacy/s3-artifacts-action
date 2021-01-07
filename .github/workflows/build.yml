@@ -19,7 +19,7 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=medlypharmacy/s3-artifacts-action/runner
+          DOCKER_IMAGE=ghcr.io/medlypharmacy/s3-artifacts-action/runner
           VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
