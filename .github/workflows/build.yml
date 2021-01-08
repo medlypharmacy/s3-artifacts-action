@@ -3,9 +3,10 @@ name: build
 on: 
   push:
     branches: 
-      - master
+      - '*'
     tags:
       - 'v*.*.*'
+
 
 jobs:
   publish-to-registry:
