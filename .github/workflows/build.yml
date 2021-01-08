@@ -1,23 +1,86 @@
 name: build
 
-on: [push, pull_request]
+on: 
+  push:
+    branches: 
+      - master
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  publish-s3-artifact:
+  publish-to-registry:
     runs-on: ubuntu-latest
     steps:
+      - 
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Prepare
+        id: prep
+        run: |
+          DOCKER_IMAGE=ghcr.io/medlypharmacy/s3-artifacts-action/runner
+          VERSION=edge
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF == refs/heads/* ]]; then
+            VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          elif [[ $GITHUB_REF == refs/pull/* ]]; then
+            VERSION=pr-${{ github.event.number }}
+          fi
+          TAGS="${DOCKER_IMAGE}:${VERSION}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAGS="$TAGS,${DOCKER_IMAGE}:sha-${GITHUB_SHA::8}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.created=${{ steps.prep.outputs.created }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [publish-to-registry]
+    steps:
       - uses: actions/checkout@v2
-      - name: Upload to S3 as artifact
+      -
+        name: Upload to S3 as artifact
         uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           source_path: './samples/dummy91.zip'
-  publish-s3-artifact-folder:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
+      - 
+        name: Upload artifact directory to S3
         uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
@@ -25,11 +88,8 @@ jobs:
           source_path: './samples/dummyfolder'
           destination_path: "/dummyartifacts"
           resource_type: "DIRECTORY"
-  publish-swagger-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
+      - 
+        name: Upload generated swagger doc to S3
         uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
@@ -37,11 +97,8 @@ jobs:
           source_path: './samples/api/spec'
           aws_s3_bucket_name: 'medly-dev-test-cases'
           resource_type: "SWAGGER_TO_HTML"
-  publish-test-coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
+      - 
+        name: Upload test coverage files to S3
         uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
@@ -49,11 +106,8 @@ jobs:
           source_path: './samples/build/reports/jacoco/codeCoverageReport/html'
           aws_s3_bucket_name: 'medly-dev-test-cases'
           resource_type: "TEST_COVERAGE"
-  publish-test-coverage-with-destination-path:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload to S3 artifact folder
+      - 
+        name: Upload test coverage files to S3 with custom destination_path
         uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
