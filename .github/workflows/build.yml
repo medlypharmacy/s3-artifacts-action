@@ -9,7 +9,7 @@ on:
       - 'v*.*.*'
 
 jobs:
-  publish-to-docker:
+  publish-to-registry:
     runs-on: ubuntu-latest
     steps:
       - 
@@ -68,21 +68,21 @@ jobs:
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
 
-  publish-s3-artifact:
+  test:
     runs-on: ubuntu-latest
-    needs: [publish-to-docker]
+    needs: [publish-to-registry]
     steps:
       - uses: actions/checkout@v2
       -
         name: Upload to S3 as artifact
-        uses: medlypharmacy/s3-artifacts-action@publish-docker-image
+        uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
           source_path: './samples/dummy91.zip'
       - 
         name: Upload artifact directory to S3
-        uses: medlypharmacy/s3-artifacts-action@publish-docker-image
+        uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
@@ -91,7 +91,7 @@ jobs:
           resource_type: "DIRECTORY"
       - 
         name: Upload generated swagger doc to S3
-        uses: medlypharmacy/s3-artifacts-action@publish-docker-image
+        uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
@@ -100,7 +100,7 @@ jobs:
           resource_type: "SWAGGER_TO_HTML"
       - 
         name: Upload test coverage files to S3
-        uses: medlypharmacy/s3-artifacts-action@publish-docker-image
+        uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
@@ -109,7 +109,7 @@ jobs:
           resource_type: "TEST_COVERAGE"
       - 
         name: Upload test coverage files to S3 with custom destination_path
-        uses: medlypharmacy/s3-artifacts-action@publish-docker-image
+        uses: medlypharmacy/s3-artifacts-action@master
         with:
           aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
