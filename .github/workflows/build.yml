@@ -3,10 +3,10 @@ name: build
 on: 
   push:
     branches: 
-      - master
-      - no-jdk # todo remove this
+      - '*'
     tags:
       - 'v*.*.*'
+
 
 jobs:
   publish-to-registry:
