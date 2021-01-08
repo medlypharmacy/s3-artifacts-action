@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - master
-      - publish-docker-image # todo remove this
     tags:
       - 'v*.*.*'
 
