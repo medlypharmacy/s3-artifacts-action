@@ -19,9 +19,13 @@ inputs:
   source_path:  
     description: 'Path of the zipped distribution file'
     required: true
-  destination_path:  
+  destination_path:
     description: 'Relative path where the file needs to be updated on S3'
     required: false
+  exclude_repo_from_destination_path:
+    description: 'By default, the repo name is included in the destination path. Set to true to remove the repo name from the destination path.'
+    required: false
+    default: false
   resource_type:  
     description: 'FILE | DIRECTORY | SWAGGER_TO_HTML | TEST_COVERAGE. Default is FILE'
     required: false

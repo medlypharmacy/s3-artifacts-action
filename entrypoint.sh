@@ -93,7 +93,11 @@ fi
 
 [[ $INPUT_RESOURCE_TYPE == 'FILE' ]] && ARGS="" || ARGS="--recursive"
 
-sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${REPO_NAME}/${DESTINATION_PATH} \
+if [[ $INPUT_EXCLUDE_REPO_FROM_DESTINATION_PATH != 'true' ]]; then
+  DESTINATION_PATH="${REPO_NAME}/${DESTINATION_PATH}"
+fi
+
+sh -c "aws s3 cp ${INPUT_SOURCE_PATH} s3://${INPUT_AWS_S3_BUCKET_NAME}/${DESTINATION_PATH} \
         --profile upload-artifacts-profile \
         --no-progress \
         --metadata $METADATA $ARGS"
