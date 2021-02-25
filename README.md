@@ -47,6 +47,7 @@ publish-s3-artifact-folder:
           aws_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
           source_path: './dummyfolder'
           destination_path: "/dummyartifacts"
+          exclude_repo_from_destination_path: true
           resource_type: "DIRECTORY"  
 ```
 
