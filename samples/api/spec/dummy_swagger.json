@@ -1,0 +1,208 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Users",
+    "contact": {},
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081/api",
+      "variables": {}
+    }
+  ],
+  "paths": {
+    "/users/{id}/tasks": {
+      "get": {
+        "operationId": "getMyTasks",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of records to skip before starting to collect"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of records to return at once"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "User id for fetching associated tasks"
+          }
+        ],
+        "tags": ["users"],
+        "summary": "Get my tasks",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyTaskResponse"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ForbiddenError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "createUsers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CreateUserRequest"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["users"],
+        "summary": "Create Users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ForbiddenError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "ForbiddenError": {
+        "description": "error response for forbidden",
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["email", "name"]
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "MyTaskResponse": {
+        "required": [
+          "id",
+          "rxNumber",
+          "patientFirstName",
+          "patientLastName",
+          "patientDob",
+          "drugName",
+          "doctorFirstName",
+          "doctorLastName",
+          "status",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "rxNumber": {
+            "type": "string"
+          },
+          "patientFirstName": {
+            "type": "string"
+          },
+          "patientLastName": {
+            "type": "string"
+          },
+          "patientDob": {
+            "type": "string"
+          },
+          "drugName": {
+            "type": "string"
+          },
+          "doctorName": {
+            "type": "string"
+          },
+          "doctorLastName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "daysInProgress": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
