@@ -40,7 +40,7 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
     echo "Source path must be a directory for the resource type SWAGGER_TO_HTML"
     exit 1
   fi
-  SWAGGER_SPECIFICATION_FILES=$(ls $INPUT_SOURCE_PATH/(*.yml|*.json))
+  SWAGGER_SPECIFICATION_FILES=$(ls $INPUT_SOURCE_PATH/*.yml)
   for SWAGGER_SPECIFICATION_FILE in $SWAGGER_SPECIFICATION_FILES
   do
     echo "Generating html docs for: $SWAGGER_SPECIFICATION_FILE"
