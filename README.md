@@ -4,6 +4,8 @@ The purpose of this action is to upload the zipped artifact from github actions 
 
 This allows the organisation to package and upload all their artifacts to the same S3 bucket for deployment.
 
+To be able to access these artifacts, the repository has to be sent to platform devops team. They add it to a Google OAuth app, to make the suddomain url accessbile to Medly users.
+
 ## Usage
 
 This action requires 3 inputs: AWS Access Key Id, Secret Access Key, and the name of the zipped distribution file created by the github action.
