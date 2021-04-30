@@ -4,7 +4,7 @@ The purpose of this action is to upload the zipped artifact from github actions 
 
 This allows the organisation to package and upload all their artifacts to the same S3 bucket for deployment.
 
-To be able to access these artifacts, the repository has to be sent to platform devops team. They add it to a Google OAuth app, to make the suddomain url accessbile to Medly users.
+To be able to access these artifacts, the repository name has to be sent to platform devops team. They add it to a Google OAuth app, to make the suddomain url accessbile to Medly users.
 
 ## Usage
 
