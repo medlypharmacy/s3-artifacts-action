@@ -2,7 +2,7 @@ name: "Artifacts"
 description: "Uploads artifacts segregated by app and branch"
 runs:
   using: docker
-  image: docker://ghcr.io/medlypharmacy/s3-artifacts-action/runner:master
+  image: docker://ghcr.io/medlypharmacy/s3-artifacts-action/runner:fix-asyncapi-gen-cmd
 inputs:
   aws_access_key_id:  
     description: 'AWS Access Key Id'
