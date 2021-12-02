@@ -73,6 +73,9 @@ jobs:
     needs: [publish-to-registry]
     steps:
       - uses: actions/checkout@v2
+
+      - run: |
+        which git
       -
         name: Upload to S3 as artifact
         uses: medlypharmacy/s3-artifacts-action@fix-asyncapi-gen-cmd
