@@ -99,6 +99,15 @@ jobs:
           aws_s3_bucket_name: 'medly-dev-test-cases'
           resource_type: "SWAGGER_TO_HTML"
       - 
+        name: Upload generated asyncapi to S3
+        uses: medlypharmacy/s3-artifacts-action@master
+        with:
+          aws_access_key_id: ${{ secrets.S3_BUILD_ARTIFACTS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.S3_BUILD_ARTIFACTS_SECRET_ACCESS_KEY }}
+          source_path: './samples/events/spec'
+          aws_s3_bucket_name: 'medly-dev-test-cases'
+          resource_type: "ASYNCAPI_TO_HTML"
+      - 
         name: Upload test coverage files to S3
         uses: medlypharmacy/s3-artifacts-action@master
         with:
