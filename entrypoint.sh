@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -x
 
 [ -z $INPUT_AWS_S3_BUCKET_NAME ] && INPUT_AWS_S3_BUCKET_NAME="medly-dev-build-artifacts"
 [ -z $INPUT_AWS_REGION ] && INPUT_AWS_REGION="us-east-1"
