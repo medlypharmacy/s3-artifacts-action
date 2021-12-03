@@ -36,6 +36,7 @@ else
 fi
 
 if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
+  mkdir /tmp/openapi
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type SWAGGER_TO_HTML"
     exit 1
@@ -47,17 +48,18 @@ if [[ $INPUT_RESOURCE_TYPE == 'SWAGGER_TO_HTML' ]]; then
     SWAGGER_SPECIFICATION_FILE_NAME="$(basename -- $SWAGGER_SPECIFICATION_FILE)"
     redoc-cli bundle \
           $SWAGGER_SPECIFICATION_FILE \
-          -o "/tmp/${SWAGGER_SPECIFICATION_FILE_NAME%.*}/index.html"
+          -o "/tmp/openapi/${SWAGGER_SPECIFICATION_FILE_NAME%.*}/index.html"
   done
   if [[ -z "$DESTINATION_PATH" ]]; then
     DESTINATION_PATH=swagger-docs # todo: change to openapi
   else
     DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
   fi
-  INPUT_SOURCE_PATH=/tmp
+  INPUT_SOURCE_PATH=/tmp/openapi
 fi
 
 if [[ $INPUT_RESOURCE_TYPE == 'ASYNCAPI_TO_HTML' ]]; then
+  mkdir /tmp/asyncapi
   if [[ -f "$INPUT_SOURCE_PATH" ]]; then
     echo "Source path must be a directory for the resource type ASYNCAPI_TO_HTML"
     exit 1
@@ -69,14 +71,14 @@ if [[ $INPUT_RESOURCE_TYPE == 'ASYNCAPI_TO_HTML' ]]; then
     ASYNCAPI_SPECIFICATION_FILE_NAME="$(basename -- $ASYNCAPI_SPECIFICATION_FILE)"
     ag $ASYNCAPI_SPECIFICATION_FILE \
           @asyncapi/html-template@0.7.0 \
-          -o "/tmp/${ASYNCAPI_SPECIFICATION_FILE_NAME%.*}"
+          -o "/tmp/asyncapi/${ASYNCAPI_SPECIFICATION_FILE_NAME%.*}"
   done
   if [[ -z "$DESTINATION_PATH" ]]; then
     DESTINATION_PATH=asyncapi
   else
     DESTINATION_PATH=$(echo $DESTINATION_PATH | sed 's/\.*\/*//')
   fi
-  INPUT_SOURCE_PATH=/tmp
+  INPUT_SOURCE_PATH=/tmp/asyncapi
 fi 
 
 if [[ $INPUT_RESOURCE_TYPE == 'TEST_COVERAGE' ]]; then
